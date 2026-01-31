@@ -1,0 +1,101 @@
+* {
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: #0b111a; /* затемнение по бокам */
+  color: #E8EEF4;
+}
+
+/* Центровка вертикального формата */
+.app-wrapper {
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Само приложение */
+.app {
+  width: 100%;
+  max-width: 420px;   /* ширина телефона */
+  height: 100vh;
+
+  background: #0E1621;
+  display: flex;
+  flex-direction: column;
+
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Верх */
+.top {
+  padding: 16px;
+  text-align: center;
+  background: #17212B;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Центр */
+.center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Алмаз */
+.diamond {
+  width: 140px;
+  height: 140px;
+  background: linear-gradient(135deg, #2EA6FF, #229ED9);
+  clip-path: polygon(
+    50% 0%,
+    100% 35%,
+    75% 100%,
+    25% 100%,
+    0% 35%
+  );
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 0 30px rgba(46, 166, 255, 0.6);
+}
+
+.diamond:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 15px rgba(46, 166, 255, 0.9);
+}
+
+/* Низ */
+.bottom {
+  padding: 14px;
+  background: #17212B;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+/* 📱 Мобильные устройства */
+@media (max-width: 480px) {
+  .app {
+    max-width: 100%;
+    box-shadow: none;
+  }
+}
+.diamond-img {
+  width: 160px;
+  height: 160px;
+  cursor: pointer;
+
+  transition: transform 0.1s ease;
+}
+
+.diamond-img:active {
+  transform: scale(0.95);
+}

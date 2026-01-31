@@ -1,0 +1,164 @@
+.upgrades-page {
+    width: 100%;
+    max-width: 420px;
+    height: 100vh;
+  
+    display: flex;
+    flex-direction: column;
+  
+    background: #0E1621;
+    position: relative;
+    overflow: hidden;
+  
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .upgrades-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  
+    padding: 14px 16px;
+  
+    border-radius: 20px;
+  
+    background: linear-gradient(180deg, #1e2a38, #17212b);
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  
+  .upgrades-title {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+  }
+  
+  .upgrades-balance {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  
+    padding: 8px 12px;
+    border-radius: 16px;
+  
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(46, 166, 255, 0.15);
+  }
+  
+  .ub-emoji {
+    font-size: 18px;
+  }
+  
+  .ub-value {
+    font-size: 16px;
+    font-weight: 800;
+  }
+  
+  /* список */
+  .upgrades-list {
+    flex: 1;
+    overflow: auto;
+    padding-bottom: 80px; /* под нижнюю навигацию */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  /* карточка апгрейда */
+  .upgrade-card {
+    border-radius: 22px;
+    padding: 14px 14px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  
+    background: linear-gradient(180deg, #1c2733, #141d26);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  
+    box-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+  
+  .uc-left {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+  }
+  
+  .uc-emoji {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    background: rgba(46, 166, 255, 0.12);
+    border: 1px solid rgba(46, 166, 255, 0.15);
+    font-size: 22px;
+  }
+  
+  .uc-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  
+  .uc-title {
+    font-size: 15px;
+    font-weight: 800;
+  }
+  
+  .uc-desc {
+    font-size: 12px;
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .uc-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
+  
+  .uc-level {
+    font-size: 12px;
+    opacity: 0.75;
+    font-weight: 700;
+  }
+  
+  .uc-buy {
+    border: none;
+    border-radius: 16px;
+    padding: 10px 12px;
+  
+    font-weight: 800;
+    font-size: 13px;
+  
+    color: #0b111a;
+    background: #2EA6FF;
+  
+    cursor: pointer;
+    transition: transform 0.08s ease, opacity 0.15s ease;
+  }
+  
+  .uc-buy:active {
+    transform: scale(0.98);
+  }
+  
+  .uc-buy.disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  

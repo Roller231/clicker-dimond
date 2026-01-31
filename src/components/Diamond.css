@@ -1,0 +1,30 @@
+.diamond-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* картинка алмаза */
+  .diamond-img {
+    width: 270px;
+    height: 210px;
+  
+    transition: transform 0.1s ease;
+    user-select: none;
+  }
+  
+  /* эффект клика */
+  .diamond-button:active .diamond-img {
+    transform: scale(0.92);
+  }
+  
+  /* лёгкая подсветка */
+  .diamond-img {
+    filter: drop-shadow(0 0 10px rgba(46, 166, 255, 0.35));
+  }
+  

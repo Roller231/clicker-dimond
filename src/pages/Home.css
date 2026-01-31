@@ -1,0 +1,72 @@
+.home {
+  width: 100%;
+  max-width: 420px;
+
+  height: 100vh;        /* ← ВОЗВРАЩАЕМ */
+  display: flex;
+  flex-direction: column;
+
+  background: #0E1621;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.home-spacer {
+  height: 72px; /* ровно высота BottomNav */
+  flex-shrink: 0;
+}
+
+  
+  /* центр экрана */
+  .home-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  
+  /* слой белых частиц */
+  .home-particles {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  
+  /* частицы */
+  .home-particles::before,
+  .home-particles::after {
+    content: '';
+    position: absolute;
+    inset: -150%;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px),
+      radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size:
+      40px 40px,
+      90px 90px;
+    animation: whiteParticlesMove 90s linear infinite;
+  }
+  
+  .home-particles::after {
+    animation-duration: 140s;
+    opacity: 0.6;
+  }
+  
+  @keyframes whiteParticlesMove {
+    from {
+      transform: translate(0, 0);
+    }
+    to {
+      transform: translate(30%, 40%);
+    }
+  }
+  
+  /* весь UI поверх частиц */
+  .home > *:not(.home-particles) {
+    position: relative;
+    z-index: 1;
+  }
+  
