@@ -130,3 +130,36 @@ class UserTask(Base):
 
     user = relationship("User")
     task = relationship("Task", back_populates="user_tasks")
+
+
+# ─────────────────────────────────────────────────────────────
+# Stars Pending Payments (для хранения ожидающих платежей)
+# ─────────────────────────────────────────────────────────────
+class StarsPending(Base):
+    """Ожидающие платежи через Telegram Stars."""
+    __tablename__ = "stars_pending"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    shop_item_id = Column(Integer, ForeignKey("shop_items.id", ondelete="CASCADE"), nullable=False)
+    payload = Column(String(100), unique=True, nullable=False)  # уникальный payload для Telegram
+    status = Column(String(20), default="pending", nullable=False)  # pending / success / failed
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+
+    user = relationship("User")
+    shop_item = relationship("ShopItem")
+
+
+# ─────────────────────────────────────────────────────────────
+# Админские настройки (для бота и приложения)
+# ─────────────────────────────────────────────────────────────
+class AdminSettings(Base):
+    """Настройки бота и приложения, редактируемые через админку."""
+    __tablename__ = "admin_settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), unique=True, nullable=False)  # ключ настройки
+    value = Column(Text, nullable=True)  # значение
+    description = Column(String(255), nullable=True)  # описание для админки
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

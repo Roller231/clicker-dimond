@@ -37,7 +37,6 @@ export default function Shop({ balance }: Props) {
             body: JSON.stringify({ user_id: user.id })
           })
           await refreshUser()
-          alert(`Успешно! +${currentItemRef.current?.crystals || 0} 💎`)
         } catch (err) {
           console.error('Stars success error', err)
         } finally {
@@ -79,24 +78,25 @@ export default function Shop({ balance }: Props) {
       const data = await res.json()
       
       // Открываем invoice в Telegram
-      if (window.Telegram?.WebApp?.openInvoice) {
+      // ВРЕМЕННО: Telegram Stars не включен для бота, используем тестовый режим
+      const TEST_MODE = true // Поставь false когда Stars будет включен
+      
+      if (!TEST_MODE && window.Telegram?.WebApp?.openInvoice) {
         window.Telegram.WebApp.openInvoice(data.invoice_link)
       } else {
-        // Для локального тестирования - сразу подтверждаем
-        console.log('Local test: simulating payment')
+        // Тестовый режим - сразу подтверждаем покупку
+        console.log('TEST MODE: simulating payment')
         await fetch(`${API_BASE}/stars/success`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user_id: user.id })
         })
         await refreshUser()
-        alert(`Успешно! +${item.crystals} 💎`)
         setBuying(false)
         currentItemRef.current = null
       }
     } catch (error) {
       console.error('Failed to create invoice:', error)
-      alert('Ошибка создания платежа. Попробуйте позже.')
       setBuying(false)
       currentItemRef.current = null
     }

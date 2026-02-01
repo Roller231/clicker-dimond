@@ -1,0 +1,95 @@
+/* Task 4: Banner Carousel Styles - Swiper */
+.banner-carousel {
+  position: relative;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.banner-swiper {
+  width: 100%;
+  border-radius: 16px;
+}
+
+.banner-swiper .swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.banner-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Swiper Pagination */
+.banner-swiper .swiper-pagination {
+  bottom: 12px !important;
+  left: 16px !important;
+  width: auto !important;
+  text-align: left !important;
+}
+
+.banner-swiper .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.4);
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.banner-swiper .swiper-pagination-bullet-active {
+  width: 24px;
+  height: 6px;
+  border-radius: 3px;
+  background: #ffffff;
+}
+
+/* Custom Pagination - Bottom Left */
+.banner-pagination {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 10;
+  background: transparent;
+}
+
+.banner-pagination-item {
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Inactive state: small dot */
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.banner-pagination-item:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Active state: elongated white line */
+.banner-pagination-item.active {
+  width: 24px;
+  height: 6px;
+  border-radius: 3px;
+  background: #ffffff;
+}
+
+/* Legacy support */
+.banner {
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}

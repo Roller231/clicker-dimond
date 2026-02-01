@@ -301,6 +301,39 @@ class UserTaskAdmin(ModelView, model=models.UserTask):
     }
 
 
+class AdminSettingsAdmin(ModelView, model=models.AdminSettings):
+    name = "Настройка"
+    name_plural = "Настройки бота"
+    icon = "fa-solid fa-cog"
+    
+    column_list = [
+        models.AdminSettings.id,
+        models.AdminSettings.name,
+        models.AdminSettings.value,
+        models.AdminSettings.description,
+        models.AdminSettings.updated_at,
+    ]
+    
+    column_searchable_list = [
+        models.AdminSettings.name,
+        models.AdminSettings.description,
+    ]
+    
+    column_labels = {
+        models.AdminSettings.id: "ID",
+        models.AdminSettings.name: "Ключ",
+        models.AdminSettings.value: "Значение",
+        models.AdminSettings.description: "Описание",
+        models.AdminSettings.updated_at: "Обновлено",
+    }
+    
+    form_columns = [
+        models.AdminSettings.name,
+        models.AdminSettings.value,
+        models.AdminSettings.description,
+    ]
+
+
 # ─────────────────────────────────────────────────────────────
 # Setup Admin
 # ─────────────────────────────────────────────────────────────
@@ -323,5 +356,6 @@ def setup_admin(app):
     admin.add_view(PurchaseAdmin)
     admin.add_view(TaskAdmin)
     admin.add_view(UserTaskAdmin)
+    admin.add_view(AdminSettingsAdmin)
     
     return admin

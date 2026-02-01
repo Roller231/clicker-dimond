@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from uuid import uuid4
+from datetime import datetime
 import httpx
 
 from ..database import get_db
@@ -8,9 +10,6 @@ from ..config import get_settings
 from .. import crud, models
 
 router = APIRouter(prefix="/stars", tags=["Stars Payment"])
-
-# Временное хранилище ожидающих платежей (user_id -> shop_item_id)
-pending_payments: dict[int, int] = {}
 
 
 class CreateInvoiceRequest(BaseModel):
@@ -36,12 +35,16 @@ class SuccessResponse(BaseModel):
 async def create_stars_invoice(req: CreateInvoiceRequest, db: Session = Depends(get_db)):
     """
     Создать invoice для оплаты звёздами.
-    Сохраняем shop_item_id для user_id чтобы потом начислить кристаллы.
+    Сохраняем pending платёж в БД с уникальным payload.
     """
     settings = get_settings()
     BOT_TOKEN = settings.TELEGRAM_BOT_TOKEN
     if not BOT_TOKEN or BOT_TOKEN == "YOUR_BOT_TOKEN_HERE":
         raise HTTPException(status_code=500, detail="Bot token not configured")
+
+    user = crud.get_user_by_id(db, req.user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
 
     shop_item = crud.get_shop_item_by_id(db, req.shop_item_id)
     if not shop_item:
@@ -50,24 +53,20 @@ async def create_stars_invoice(req: CreateInvoiceRequest, db: Session = Depends(
     if not shop_item.is_active:
         raise HTTPException(status_code=400, detail="Shop item is not available")
 
-    # Сохраняем ожидающий платёж
-    pending_payments[req.user_id] = req.shop_item_id
+    # Уникальный payload — ключевой момент!
+    payload = f"stars_{uuid4()}"
 
     # Создаём invoice через Telegram Bot API
-    async with httpx.AsyncClient() as client:
+    # ВАЖНО: НЕ передаём provider_token для Telegram Stars!
+    async with httpx.AsyncClient(timeout=10) as client:
         response = await client.post(
             f"https://api.telegram.org/bot{BOT_TOKEN}/createInvoiceLink",
             json={
-                "title": f"{shop_item.crystals} кристаллов",
-                "description": f"Покупка {shop_item.crystals} кристаллов за {shop_item.stars} звёзд",
-                "payload": f"shop_{shop_item.id}_user_{req.user_id}",
+                "title": "Покупка кристаллов",
+                "description": f"{shop_item.stars} ⭐",
+                "payload": payload,
                 "currency": "XTR",
-                "prices": [
-                    {
-                        "label": f"{shop_item.crystals} кристаллов",
-                        "amount": shop_item.stars
-                    }
-                ]
+                "prices": [{"label": "Stars", "amount": shop_item.stars}]
             }
         )
         
@@ -78,8 +77,18 @@ async def create_stars_invoice(req: CreateInvoiceRequest, db: Session = Depends(
             raise HTTPException(status_code=400, detail=f"Telegram API error: {error_desc}")
         
         invoice_link = data.get("result")
+
+    # Сохраняем pending платёж в БД
+    pending = models.StarsPending(
+        user_id=req.user_id,
+        shop_item_id=req.shop_item_id,
+        payload=payload,
+        status="pending"
+    )
+    db.add(pending)
+    db.commit()
         
-        return CreateInvoiceResponse(invoice_link=invoice_link)
+    return CreateInvoiceResponse(invoice_link=invoice_link)
 
 
 @router.post("/success", response_model=SuccessResponse)
@@ -92,17 +101,39 @@ def confirm_stars_payment(req: SuccessRequest, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Получаем shop_item_id из ожидающих платежей
-    shop_item_id = pending_payments.pop(req.user_id, None)
-    if not shop_item_id:
+    # Ищем последний pending платёж в БД
+    pending = (
+        db.query(models.StarsPending)
+        .filter(
+            models.StarsPending.user_id == req.user_id,
+            models.StarsPending.status == "pending"
+        )
+        .order_by(models.StarsPending.created_at.desc())
+        .first()
+    )
+
+    if not pending:
         raise HTTPException(status_code=400, detail="No pending payment found")
 
-    shop_item = crud.get_shop_item_by_id(db, shop_item_id)
+    # Уже обработан — идемпотентность
+    if pending.status == "success":
+        return SuccessResponse(
+            success=True,
+            crystals_added=0,
+            new_balance=user.balance,
+        )
+
+    shop_item = crud.get_shop_item_by_id(db, pending.shop_item_id)
     if not shop_item:
         raise HTTPException(status_code=404, detail="Shop item not found")
 
     # Создаём покупку и начисляем кристаллы
     crud.create_purchase(db, user, shop_item)
+
+    # Помечаем платёж как успешный
+    pending.status = "success"
+    pending.completed_at = datetime.utcnow()
+    db.commit()
 
     return SuccessResponse(
         success=True,

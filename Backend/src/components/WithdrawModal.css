@@ -1,0 +1,543 @@
+.withdraw-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1001;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: withdraw-overlay-fade-in 0.3s ease-out;
+}
+
+@keyframes withdraw-overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================
+   🎁 GIFTS TAB (WITHDRAW)
+   =========================== */
+
+   .withdraw-gifts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+    max-height: 45vh;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  
+  /* Карточка подарка */
+  .withdraw-gift {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .withdraw-gift:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .withdraw-gift.selected {
+    border-color: #5B3EF5;
+    box-shadow: 0 0 0 2px rgba(91, 62, 245, 0.4);
+  }
+  
+  /* Картинка подарка */
+  .withdraw-gift > img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 6px;
+  }
+  
+  /* Цена подарка */
+  .withdraw-gift-price {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .withdraw-gift-currency-icon {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+  }
+
+  /* Количество */
+  .withdraw-gift-count {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  /* Скролл аккуратный */
+  .withdraw-gifts-grid::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .withdraw-gifts-grid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+  }
+  
+
+.withdraw-modal-content {
+  width: min(420px, calc(100% - 48px));
+  background: linear-gradient(180deg, #1A1035 0%, #0D0326 100%);
+  border-radius: 24px 24px 0 0;
+  padding: 12px 20px 32px;
+  animation: withdraw-modal-slide-up 0.3s ease-out;
+  touch-action: none;
+  user-select: none;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* ===========================
+   💰 COINS TAB (WITHDRAW)
+   =========================== */
+
+   .withdraw-coins {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+/* Balance Row - баланс слева, селектор справа */
+.withdraw-balance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+}
+
+/* Compact Balance Info */
+.withdraw-balance-info-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.withdraw-balance-label {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.withdraw-balance-value-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.withdraw-balance-icon-small {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+/* Compact Currency Selector */
+.withdraw-currency-selector-compact {
+  position: relative;
+}
+
+.withdraw-currency-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.withdraw-currency-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.withdraw-currency-icon-small {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.withdraw-currency-name-small {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.withdraw-currency-arrow-small {
+  color: rgba(255, 255, 255, 0.6);
+  transition: transform 0.2s ease;
+}
+
+.withdraw-currency-arrow-small.open {
+  transform: rotate(180deg);
+}
+
+.withdraw-currency-dropdown-compact {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 120px;
+  background: #1F1145;
+  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  overflow: hidden;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.withdraw-currency-option-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.withdraw-currency-option-compact:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.withdraw-currency-option-compact.active {
+  background: linear-gradient(135deg, rgba(91, 62, 245, 0.3) 0%, rgba(139, 92, 246, 0.2) 100%);
+}
+
+/* Amount Wrapper */
+.withdraw-amount-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+}
+
+.withdraw-amount-wrapper .withdraw-amount-input {
+  flex: 1;
+  max-width: 200px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: #fff;
+  caret-color: #fff;
+}
+
+.withdraw-amount-wrapper .withdraw-amount-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.withdraw-max-button {
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #2C7DF8 0%, #1E5FD9 100%);
+  border: none;
+  border-radius: 10px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.withdraw-max-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(44, 125, 248, 0.4);
+}
+
+.withdraw-max-button:active {
+  transform: scale(0.98);
+}
+  
+  .withdraw-coins input {
+    width: 100%;
+    text-align: center;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 36px;
+    font-weight: 500;
+    color: #fff;
+    caret-color: #fff;
+  }
+  
+  .withdraw-coins input::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+  }
+  
+
+@keyframes withdraw-modal-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.withdraw-modal-handle {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 16px;
+  cursor: grab;
+}
+
+.withdraw-modal-handle:active {
+  cursor: grabbing;
+}
+
+.withdraw-modal-handle-bar {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.withdraw-modal-title {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  margin: 0 0 12px;
+}
+
+.withdraw-modal-tabs {
+  display: flex;
+  gap: 0;
+  background: #2A1F4E;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 12px;
+}
+
+.withdraw-modal-tab {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.withdraw-modal-tab.active {
+  background: linear-gradient(135deg, #2C7DF8 0%, #1E5FD9 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(44, 125, 248, 0.4);
+}
+
+/* Поле суммы */
+.withdraw-amount-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0 48px;
+}
+
+.withdraw-amount-input {
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 36px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.25);
+  caret-color: #fff;
+}
+
+.withdraw-amount-input:focus {
+  color: #fff;
+}
+
+.withdraw-amount-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* Кнопка вывода */
+.withdraw-submit-button {
+  width: 100%;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2C7DF8 0%, #951BF9 100%);
+  color: #fff;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 24px rgba(44, 125, 248, 0.3);
+}
+
+.withdraw-submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(44, 125, 248, 0.4);
+}
+
+.withdraw-submit-button:active {
+  transform: translateY(0);
+}
+
+.withdraw-submit-button:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 430px) {
+  .withdraw-modal-content {
+    width: 100%;
+    margin: 0;
+    border-radius: 24px 24px 0 0;
+    padding: 16px 20px 28px;
+  }
+
+  .withdraw-modal-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .withdraw-modal-tabs {
+    margin-bottom: 24px;
+  }
+
+  .withdraw-modal-tab {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+
+  .withdraw-amount-section {
+    padding: 32px 0 40px;
+  }
+
+  .withdraw-amount-input {
+    font-size: 32px;
+  }
+
+  .withdraw-submit-button {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 375px) {
+  .withdraw-modal-content {
+    padding: 14px 16px 24px;
+  }
+
+  .withdraw-modal-title {
+    font-size: 17px;
+  }
+
+  .withdraw-modal-tab {
+    padding: 11px 8px;
+    font-size: 12px;
+  }
+
+  .withdraw-amount-section {
+    padding: 28px 0 36px;
+  }
+
+  .withdraw-amount-input {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 320px) {
+  .withdraw-modal-content {
+    padding: 12px 12px 20px;
+  }
+
+  .withdraw-modal-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .withdraw-modal-tabs {
+    padding: 3px;
+    margin-bottom: 20px;
+  }
+
+  .withdraw-modal-tab {
+    padding: 10px 6px;
+    font-size: 11px;
+  }
+
+  .withdraw-amount-section {
+    padding: 24px 0 32px;
+  }
+
+  .withdraw-amount-input {
+    font-size: 24px;
+  }
+
+  .withdraw-submit-button {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+}
