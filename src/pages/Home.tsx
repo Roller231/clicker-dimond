@@ -11,9 +11,10 @@ type Props = {
   passive: number
   clickPower: number
   maxEnergy: number
+  onOpenTop: () => void
 }
 
-export default function Home({ balance, onBalanceChange, passive, clickPower, maxEnergy }: Props) {
+export default function Home({ balance, onBalanceChange, passive, clickPower, maxEnergy, onOpenTop }: Props) {
   const [energy, setEnergy] = useState<number>(maxEnergy)
 
   useEffect(() => {
@@ -46,7 +47,12 @@ export default function Home({ balance, onBalanceChange, passive, clickPower, ma
   <BottomBar energy={energy} maxEnergy={maxEnergy} passive={passive} />
 
   {/* БАЛАНС */}
-  <TopBar balance={balance} />
+  <div className="home-balance-row">
+    <TopBar balance={balance} />
+    <button className="home-top-btn" onClick={onOpenTop}>
+      🏆
+    </button>
+  </div>
 
   {/* ЦЕНТР */}
   <div className="home-center">

@@ -38,6 +38,7 @@ function getAutoclickIntervalsMs(upgrades: Record<UpgradeKey, UpgradeState>) {
 
 export default function App() {
   const [page, setPage] = useState<Page>('home')
+  const [isTopOpen, setIsTopOpen] = useState<boolean>(false)
 
   const [balance, setBalance] = useState<number>(0)
   const [upgrades, setUpgrades] = useState<Record<UpgradeKey, UpgradeState>>({
@@ -77,6 +78,7 @@ export default function App() {
           passive={passivePerSecond}
           clickPower={clickPower}
           maxEnergy={maxEnergy}
+          onOpenTop={() => setIsTopOpen(true)}
         />
       )}
       {page === 'upgrades' && (
@@ -104,6 +106,40 @@ export default function App() {
       {page === 'tasks' && <Tasks balance={balance} />}
 
       <BottomNav active={page} onChange={setPage} />
+
+      {isTopOpen && (
+        <div className="leaderboard-overlay" onClick={() => setIsTopOpen(false)}>
+          <div className="leaderboard-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="leaderboard-head">
+              <div className="leaderboard-title">Топ игроков</div>
+              <button className="leaderboard-close" onClick={() => setIsTopOpen(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div className="leaderboard-list">
+              {[
+                { name: 'Player_01', amount: 125000 },
+                { name: 'Player_02', amount: 98000 },
+                { name: 'Player_03', amount: 76500 },
+                { name: 'Player_04', amount: 52000 },
+                { name: 'Player_05', amount: 41000 },
+                { name: 'Player_06', amount: 38000 },
+                { name: 'Player_07', amount: 31000 },
+                { name: 'Player_08', amount: 27000 },
+                { name: 'Player_09', amount: 22000 },
+                { name: 'Player_10', amount: 18000 },
+              ].map((p, idx) => (
+                <div className="leaderboard-item" key={p.name}>
+                  <div className="lb-rank">#{idx + 1}</div>
+                  <div className="lb-name">{p.name}</div>
+                  <div className="lb-amount">{p.amount} 💎</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
