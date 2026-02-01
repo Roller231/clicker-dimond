@@ -10,6 +10,51 @@ body {
   color: #E8EEF4;
 }
 
+.page-with-particles {
+  position: relative;
+  overflow: hidden;
+}
+
+.page-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.page-particles::before,
+.page-particles::after {
+  content: '';
+  position: absolute;
+  inset: -150%;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size:
+    40px 40px,
+    90px 90px;
+  animation: whiteParticlesMove 90s linear infinite;
+}
+
+.page-particles::after {
+  animation-duration: 140s;
+  opacity: 0.6;
+}
+
+@keyframes whiteParticlesMove {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(30%, 40%);
+  }
+}
+
+.page-with-particles > *:not(.page-particles) {
+  position: relative;
+  z-index: 1;
+}
+
 /* Центровка вертикального формата */
 .app-wrapper {
   width: 100%;

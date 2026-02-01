@@ -1,11 +1,14 @@
 .bottom-nav {
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  z-index: 10;
 
   height: 72px;
   width: 100%;
+  max-width: 420px;
 
   display: flex;
   justify-content: space-around;
@@ -23,6 +26,12 @@
 
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .bottom-nav {
+    max-width: 100%;
+  }
 }
 
 

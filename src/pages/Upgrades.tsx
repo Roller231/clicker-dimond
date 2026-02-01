@@ -1,6 +1,6 @@
 import './Upgrades.css'
 
-type UpgradeKey = 'click' | 'autoclick' | 'maxEnergy'
+type UpgradeKey = 'click' | 'autoclick' | 'megaclick' | 'superclick' | 'maxEnergy'
 
 type UpgradeState = {
   level: number
@@ -26,12 +26,15 @@ export default function Upgrades({ balance, upgrades, onBuy }: Props) {
     emoji: string
   }> = [
     { key: 'click', title: 'Клик', desc: '+1 к доходу за клик', emoji: '👆' },
-    { key: 'autoclick', title: 'Автоклик', desc: 'Кликает сам раз в сек', emoji: '🤖' },
+    { key: 'autoclick', title: 'Автоклик', desc: 'Кликает сам раз в 2 сек', emoji: '🤖' },
+    { key: 'megaclick', title: 'Мега клик', desc: 'Кликает сам раз в 1 сек', emoji: '🦾' },
+    { key: 'superclick', title: 'Суперклик', desc: 'Кликает сам раз в 0.5 сек', emoji: '🔥' },
     { key: 'maxEnergy', title: 'Макс. энергия', desc: 'Увеличивает запас энергии', emoji: '⚡' },
   ]
 
   return (
-    <div className="upgrades-page">
+    <div className="upgrades-page page-with-particles">
+      <div className="page-particles" />
       <div className="upgrades-header">
         <div className="upgrades-title">Улучшения</div>
 

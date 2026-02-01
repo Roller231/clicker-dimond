@@ -5,31 +5,45 @@ import BottomBar from '../components/BottomBar'
 
 import './Home.css'
 
-export default function Home() {
-  const [balance, setBalance] = useState<number>(0)
-  const [energy, setEnergy] = useState<number>(100)
-  const [passive] = useState<number>(2)
+type Props = {
+  balance: number
+  onBalanceChange: (updater: (prev: number) => number) => void
+  passive: number
+  clickPower: number
+  maxEnergy: number
+}
+
+export default function Home({ balance, onBalanceChange, passive, clickPower, maxEnergy }: Props) {
+  const [energy, setEnergy] = useState<number>(maxEnergy)
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setBalance(b => b + passive)
+    // keep effect subscription stable in case parent callback changes
+  }, [onBalanceChange])
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setEnergy((e) => (e >= maxEnergy ? e : e + 1))
     }, 1000)
 
-    return () => clearInterval(interval)
-  }, [passive])
+    return () => window.clearInterval(id)
+  }, [maxEnergy])
+
+  useEffect(() => {
+    setEnergy((e) => Math.min(e, maxEnergy))
+  }, [maxEnergy])
 
   const onDiamondClick = () => {
     if (energy <= 0) return
-    setBalance(b => b + 1)
+    onBalanceChange(b => b + clickPower)
     setEnergy(e => e - 1)
   }
 
   return (
-<div className="home">
-  <div className="home-particles" />
+<div className="home page-with-particles">
+  <div className="page-particles" />
 
   {/* САМЫЙ ВЕРХ */}
-  <BottomBar energy={energy} passive={passive} />
+  <BottomBar energy={energy} maxEnergy={maxEnergy} passive={passive} />
 
   {/* БАЛАНС */}
   <TopBar balance={balance} />

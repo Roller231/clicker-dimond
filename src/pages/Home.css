@@ -28,7 +28,7 @@
 
   
   /* слой белых частиц */
-  .home-particles {
+  .page-particles {
     position: absolute;
     inset: 0;
     z-index: 0;
@@ -36,8 +36,8 @@
   }
   
   /* частицы */
-  .home-particles::before,
-  .home-particles::after {
+  .page-particles::before,
+  .page-particles::after {
     content: '';
     position: absolute;
     inset: -150%;
@@ -50,7 +50,7 @@
     animation: whiteParticlesMove 90s linear infinite;
   }
   
-  .home-particles::after {
+  .page-particles::after {
     animation-duration: 140s;
     opacity: 0.6;
   }
@@ -65,8 +65,7 @@
   }
   
   /* весь UI поверх частиц */
-  .home > *:not(.home-particles) {
+  .home > *:not(.page-particles) {
     position: relative;
     z-index: 1;
   }
-  
