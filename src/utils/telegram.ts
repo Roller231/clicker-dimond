@@ -40,6 +40,8 @@ interface TelegramWebApp {
   openInvoice: (url: string, callback?: (status: string) => void) => void;
   showAlert: (message: string, callback?: () => void) => void;
   showConfirm: (message: string, callback?: (confirmed: boolean) => void) => void;
+  onEvent: (eventType: string, callback: (event: unknown) => void) => void;
+  offEvent: (eventType: string, callback: (event: unknown) => void) => void;
 }
 
 export interface TelegramUser {
