@@ -14,6 +14,7 @@ export default function Shop({ balance }: Props) {
   const [shopItems, setShopItems] = useState<api.ShopItem[]>([])
   const [loading, setLoading] = useState(true)
   const [buying, setBuying] = useState(false)
+  const [successEffect, setSuccessEffect] = useState<number | null>(null)
   const currentItemRef = useRef<api.ShopItem | null>(null)
 
   useEffect(() => {
@@ -37,7 +38,8 @@ export default function Shop({ balance }: Props) {
             body: JSON.stringify({ user_id: user.id })
           })
           await refreshUser()
-          alert(`Успешно! +${currentItemRef.current?.crystals || 0} 💎`)
+          setSuccessEffect(currentItemRef.current?.crystals || 0)
+          setTimeout(() => setSuccessEffect(null), 2000)
         } catch (err) {
           console.error('Stars success error', err)
         } finally {
@@ -90,13 +92,13 @@ export default function Shop({ balance }: Props) {
           body: JSON.stringify({ user_id: user.id })
         })
         await refreshUser()
-        alert(`Успешно! +${item.crystals} 💎`)
+        setSuccessEffect(item.crystals)
+        setTimeout(() => setSuccessEffect(null), 2000)
         setBuying(false)
         currentItemRef.current = null
       }
     } catch (error) {
       console.error('Failed to create invoice:', error)
-      alert('Ошибка создания платежа. Попробуйте позже.')
       setBuying(false)
       currentItemRef.current = null
     }
@@ -104,6 +106,14 @@ export default function Shop({ balance }: Props) {
 
   return (
     <div className="shop-page page-with-particles">
+      {successEffect !== null && (
+        <div className="success-overlay">
+          <div className="success-content">
+            <div className="success-emoji">💎</div>
+            <div className="success-text">+{successEffect}</div>
+          </div>
+        </div>
+      )}
       <div className="page-particles" />
       <div className="shop-header">
         <div className="shop-title">Магазин</div>

@@ -160,3 +160,77 @@
 .sc-buy:active {
   transform: scale(0.98);
 }
+
+/* Success effect overlay */
+.success-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  
+  animation: fadeIn 0.3s ease;
+}
+
+.success-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.success-emoji {
+  font-size: 80px;
+  filter: drop-shadow(0 0 30px rgba(46, 166, 255, 0.6));
+  animation: pulse 0.8s ease-in-out infinite;
+}
+
+.success-text {
+  font-size: 48px;
+  font-weight: 900;
+  color: #4ADE80;
+  text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+  animation: countUp 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  0% { 
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes countUp {
+  0% { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
