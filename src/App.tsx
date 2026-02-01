@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { initTelegram } from './telegram'
 import Home from './pages/Home'
 import Shop from './pages/Shop'
 import Exchange from './pages/Exchange'
@@ -17,6 +18,11 @@ export default function App() {
   const [page, setPage] = useState<Page>('home')
   const [isTopOpen, setIsTopOpen] = useState<boolean>(false)
   const [leaderboard, setLeaderboard] = useState<api.User[]>([])
+
+  // Initialize Telegram fullscreen
+  useEffect(() => {
+    initTelegram()
+  }, [])
 
   // Initialize user on mount
   useEffect(() => {
