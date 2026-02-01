@@ -5,79 +5,110 @@ import Exchange from './pages/Exchange'
 import Tasks from './pages/Tasks'
 import Upgrades from './pages/Upgrades'
 import BottomNav from './components/BottomNav'
+import { useUser } from './context/UserContext'
+import { getCurrentUser } from './utils/telegram'
+import * as api from './api/client'
 
 type Page = 'home' | 'upgrades' | 'shop' | 'exchange' | 'tasks'
 
-type UpgradeKey = 'click' | 'autoclick' | 'megaclick' | 'superclick' | 'maxEnergy'
-
-type UpgradeState = {
-  level: number
-  basePrice: number
-}
-
-function calcPrice(u: UpgradeState) {
-  return Math.floor(u.basePrice * Math.pow(1.35, u.level))
-}
-
-function getPassivePerSecond(upgrades: Record<UpgradeKey, UpgradeState>) {
-  const autoclicksPerSecond = upgrades.autoclick.level * 0.5
-  const megaclicksPerSecond = upgrades.megaclick.level * 1
-  const superclicksPerSecond = upgrades.superclick.level * 2
-  return autoclicksPerSecond + megaclicksPerSecond + superclicksPerSecond
-}
-
-function getAutoclickIntervalsMs(upgrades: Record<UpgradeKey, UpgradeState>) {
-  const intervals: number[] = []
-
-  for (let i = 0; i < upgrades.autoclick.level; i++) intervals.push(2000)
-  for (let i = 0; i < upgrades.megaclick.level; i++) intervals.push(1000)
-  for (let i = 0; i < upgrades.superclick.level; i++) intervals.push(500)
-
-  return intervals
-}
-
 export default function App() {
+  const { user, upgrades, isLoading, error, initUser, handleClick, handlePassiveIncome, handleBuyUpgrade, getPassiveIncome, getMaxEnergy } = useUser()
+  
   const [page, setPage] = useState<Page>('home')
   const [isTopOpen, setIsTopOpen] = useState<boolean>(false)
+  const [leaderboard, setLeaderboard] = useState<api.User[]>([])
 
-  const [balance, setBalance] = useState<number>(0)
-  const [upgrades, setUpgrades] = useState<Record<UpgradeKey, UpgradeState>>({
-    click: { level: 0, basePrice: 10 },
-    autoclick: { level: 0, basePrice: 25 },
-    megaclick: { level: 0, basePrice: 60 },
-    superclick: { level: 0, basePrice: 140 },
-    maxEnergy: { level: 0, basePrice: 15 },
-  })
-
-  const passivePerSecond = getPassivePerSecond(upgrades)
-  const clickPower = 1 + upgrades.click.level
-  const maxEnergy = 100 + upgrades.maxEnergy.level * 25
-
+  // Initialize user on mount
   useEffect(() => {
-    const timers: number[] = []
-    const intervals = getAutoclickIntervalsMs(upgrades)
+    const tgUser = getCurrentUser()
+    initUser(tgUser.id, tgUser.username, tgUser.firstName, tgUser.lastName, tgUser.photoUrl)
+  }, [initUser])
 
-    for (const ms of intervals) {
-      const id = window.setInterval(() => {
-        setBalance((b) => b + 1)
-      }, ms)
+  // Load leaderboard when modal opens
+  useEffect(() => {
+    if (isTopOpen) {
+      api.getLeaderboard(10).then(setLeaderboard).catch(console.error)
+    }
+  }, [isTopOpen])
+
+  // Autoclick timers based on upgrades (passive income - doesn't consume energy)
+  useEffect(() => {
+    if (!user) return
+
+    const timers: number[] = []
+    
+    const autoclickLevel = upgrades.find(u => u.key === 'autoclick')?.level ?? 0
+    const megaclickLevel = upgrades.find(u => u.key === 'megaclick')?.level ?? 0
+    const superclickLevel = upgrades.find(u => u.key === 'superclick')?.level ?? 0
+
+    for (let i = 0; i < autoclickLevel; i++) {
+      const id = window.setInterval(() => handlePassiveIncome(1), 2000)
+      timers.push(id)
+    }
+    for (let i = 0; i < megaclickLevel; i++) {
+      const id = window.setInterval(() => handlePassiveIncome(1), 1000)
+      timers.push(id)
+    }
+    for (let i = 0; i < superclickLevel; i++) {
+      const id = window.setInterval(() => handlePassiveIncome(1), 500)
       timers.push(id)
     }
 
     return () => {
       for (const id of timers) window.clearInterval(id)
     }
-  }, [upgrades.autoclick.level, upgrades.megaclick.level, upgrades.superclick.level])
+  }, [user, upgrades, handlePassiveIncome])
+
+  // Periodic energy refresh from server (every 5 seconds)
+  const { refreshUser: refreshUserFn } = useUser()
+  useEffect(() => {
+    if (!user) return
+    
+    const id = window.setInterval(() => {
+      refreshUserFn()
+    }, 5000)
+
+    return () => window.clearInterval(id)
+  }, [user, refreshUserFn])
+
+  // Show loading screen
+  if (isLoading) {
+    return (
+      <div className="app-wrapper">
+        <div className="loading-screen">
+          <div className="loading-spinner">💎</div>
+          <div className="loading-text">Загрузка...</div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error screen
+  if (error || !user) {
+    return (
+      <div className="app-wrapper">
+        <div className="error-screen">
+          <div className="error-icon">❌</div>
+          <div className="error-text">{error || 'Не удалось загрузить данные'}</div>
+        </div>
+      </div>
+    )
+  }
+
+  const balance = user.balance
+  const energy = user.energy
+  const passivePerSecond = getPassiveIncome()
+  const maxEnergy = getMaxEnergy()
 
   return (
     <div className="app-wrapper">
       {page === 'home' && (
         <Home
           balance={balance}
-          onBalanceChange={setBalance}
-          passive={passivePerSecond}
-          clickPower={clickPower}
+          energy={energy}
           maxEnergy={maxEnergy}
+          passive={passivePerSecond}
+          onBalanceChange={handleClick}
           onOpenTop={() => setIsTopOpen(true)}
         />
       )}
@@ -85,17 +116,7 @@ export default function App() {
         <Upgrades
           balance={balance}
           upgrades={upgrades}
-          onBuy={(key) => {
-            const u = upgrades[key]
-            const price = calcPrice(u)
-            if (balance < price) return
-
-            setBalance((b) => b - price)
-            setUpgrades((prev) => ({
-              ...prev,
-              [key]: { ...prev[key], level: prev[key].level + 1 },
-            }))
-          }}
+          onBuy={handleBuyUpgrade}
         />
       )}
 
@@ -118,24 +139,15 @@ export default function App() {
             </div>
 
             <div className="leaderboard-list">
-              {[
-                { name: 'Player_01', amount: 125000 },
-                { name: 'Player_02', amount: 98000 },
-                { name: 'Player_03', amount: 76500 },
-                { name: 'Player_04', amount: 52000 },
-                { name: 'Player_05', amount: 41000 },
-                { name: 'Player_06', amount: 38000 },
-                { name: 'Player_07', amount: 31000 },
-                { name: 'Player_08', amount: 27000 },
-                { name: 'Player_09', amount: 22000 },
-                { name: 'Player_10', amount: 18000 },
-              ].map((p, idx) => (
-                <div className="leaderboard-item" key={p.name}>
+              {leaderboard.length > 0 ? leaderboard.map((p, idx) => (
+                <div className="leaderboard-item" key={p.id}>
                   <div className="lb-rank">#{idx + 1}</div>
-                  <div className="lb-name">{p.name}</div>
-                  <div className="lb-amount">{p.amount} 💎</div>
+                  <div className="lb-name">{p.username || p.first_name || `User ${p.id}`}</div>
+                  <div className="lb-amount">{p.balance} 💎</div>
                 </div>
-              ))}
+              )) : (
+                <div className="leaderboard-empty">Нет данных</div>
+              )}
             </div>
           </div>
         </div>

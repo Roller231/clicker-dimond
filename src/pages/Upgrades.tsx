@@ -1,37 +1,21 @@
 import './Upgrades.css'
-
-type UpgradeKey = 'click' | 'autoclick' | 'megaclick' | 'superclick' | 'maxEnergy'
-
-type UpgradeState = {
-  level: number
-  basePrice: number
-}
+import type { UpgradeData } from '../context/UserContext'
 
 type Props = {
   balance: number
-  upgrades: Record<UpgradeKey, UpgradeState>
-  onBuy: (key: UpgradeKey) => void
+  upgrades: UpgradeData[]
+  onBuy: (key: string) => Promise<boolean>
 }
 
-function calcPrice(u: UpgradeState) {
-  // простая формула роста цены
-  return Math.floor(u.basePrice * Math.pow(1.35, u.level))
+const upgradesMeta: Record<string, { desc: string; emoji: string }> = {
+  click: { desc: '+1 к доходу за клик', emoji: '👆' },
+  autoclick: { desc: 'Кликает сам раз в 2 сек', emoji: '🤖' },
+  megaclick: { desc: 'Кликает сам раз в 1 сек', emoji: '🦾' },
+  superclick: { desc: 'Кликает сам раз в 0.5 сек', emoji: '🔥' },
+  maxEnergy: { desc: 'Увеличивает запас энергии', emoji: '⚡' },
 }
 
 export default function Upgrades({ balance, upgrades, onBuy }: Props) {
-  const items: Array<{
-    key: UpgradeKey
-    title: string
-    desc: string
-    emoji: string
-  }> = [
-    { key: 'click', title: 'Клик', desc: '+1 к доходу за клик', emoji: '👆' },
-    { key: 'autoclick', title: 'Автоклик', desc: 'Кликает сам раз в 2 сек', emoji: '🤖' },
-    { key: 'megaclick', title: 'Мега клик', desc: 'Кликает сам раз в 1 сек', emoji: '🦾' },
-    { key: 'superclick', title: 'Суперклик', desc: 'Кликает сам раз в 0.5 сек', emoji: '🔥' },
-    { key: 'maxEnergy', title: 'Макс. энергия', desc: 'Увеличивает запас энергии', emoji: '⚡' },
-  ]
-
   return (
     <div className="upgrades-page page-with-particles">
       <div className="page-particles" />
@@ -45,20 +29,18 @@ export default function Upgrades({ balance, upgrades, onBuy }: Props) {
       </div>
 
       <div className="upgrades-list">
-        {items.map((it) => {
-          const u = upgrades[it.key]
-          const price = calcPrice(u)
-
-          const canBuy = balance >= price
+        {upgrades.map((u) => {
+          const meta = upgradesMeta[u.key] || { desc: '', emoji: '📦' }
+          const canBuy = balance >= u.nextPrice
 
           return (
-            <div className="upgrade-card" key={it.key}>
+            <div className="upgrade-card" key={u.key}>
               <div className="uc-left">
-                <div className="uc-emoji">{it.emoji}</div>
+                <div className="uc-emoji">{meta.emoji}</div>
 
                 <div className="uc-text">
-                  <div className="uc-title">{it.title}</div>
-                  <div className="uc-desc">{it.desc}</div>
+                  <div className="uc-title">{u.title}</div>
+                  <div className="uc-desc">{meta.desc}</div>
                 </div>
               </div>
 
@@ -67,9 +49,9 @@ export default function Upgrades({ balance, upgrades, onBuy }: Props) {
 
                 <button
                   className={`uc-buy ${canBuy ? '' : 'disabled'}`}
-                  onClick={() => canBuy && onBuy(it.key)}
+                  onClick={() => canBuy && onBuy(u.key)}
                 >
-                  Купить · {price} 💎
+                  Купить · {u.nextPrice} 💎
                 </button>
               </div>
             </div>

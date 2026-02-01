@@ -3,6 +3,16 @@
   user-select: none;
 }
 
+/* Скрыть скроллбар везде, но оставить возможность скролла */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 body {
   margin: 0;
   font-family: Inter, system-ui, sans-serif;
@@ -245,4 +255,60 @@ body {
 .lb-amount {
   font-weight: 900;
   color: rgba(255, 210, 80, 0.95);
+}
+
+/* Loading Screen */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #0E1621;
+}
+
+.loading-spinner {
+  font-size: 64px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading-text {
+  margin-top: 16px;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+/* Error Screen */
+.error-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #0E1621;
+  padding: 20px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.error-text {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 300px;
+}
+
+/* Leaderboard empty */
+.leaderboard-empty {
+  text-align: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.5);
 }

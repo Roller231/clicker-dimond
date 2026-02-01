@@ -1,23 +1,45 @@
+import { useEffect, useState } from 'react'
 import './Shop.css'
+import { useUser } from '../context/UserContext'
+import * as api from '../api/client'
+import { openStarsInvoice } from '../utils/telegram'
 
 type Props = {
   balance: number
 }
 
-type Pack = {
-  id: string
-  crystals: number
-  priceLabel: string
-  bonusLabel?: string
-}
-
 export default function Shop({ balance }: Props) {
-  const packs: Pack[] = [
-    { id: 's', crystals: 100, priceLabel: '0.99 $' },
-    { id: 'm', crystals: 550, priceLabel: '3.99 $', bonusLabel: '+10%' },
-    { id: 'l', crystals: 1200, priceLabel: '7.99 $', bonusLabel: '+20%' },
-    { id: 'xl', crystals: 2500, priceLabel: '14.99 $', bonusLabel: '+30%' },
-  ]
+  const { handlePurchase } = useUser()
+  const [shopItems, setShopItems] = useState<api.ShopItem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    api.getShopItems()
+      .then(setShopItems)
+      .catch(console.error)
+      .finally(() => setLoading(false))
+  }, [])
+
+  const handleBuy = (item: api.ShopItem) => {
+    // Открываем Telegram Stars invoice
+    // В реальном приложении invoiceUrl приходит с бэкенда
+    const fakeInvoiceUrl = `https://t.me/$pay?slug=stars_${item.id}`
+    
+    openStarsInvoice(
+      fakeInvoiceUrl,
+      async (paymentId) => {
+        // Платёж успешен - отправляем на бэкенд
+        const success = await handlePurchase(item.id, paymentId)
+        if (success) {
+          alert(`Успешно! +${item.crystals} 💎`)
+        }
+      },
+      () => {
+        // Платёж отменён
+        console.log('Payment cancelled')
+      }
+    )
+  }
 
   return (
     <div className="shop-page page-with-particles">
@@ -31,24 +53,25 @@ export default function Shop({ balance }: Props) {
         </div>
       </div>
 
-
       <div className="shop-list">
-        {packs.map((p) => (
-          <div className="shop-card" key={p.id}>
+        {loading ? (
+          <div className="shop-loading">Загрузка...</div>
+        ) : shopItems.map((item) => (
+          <div className="shop-card" key={item.id}>
             <div className="sc-left">
               <div className="sc-emoji">💎</div>
 
               <div className="sc-text">
-                <div className="sc-title">{p.crystals} кристаллов</div>
+                <div className="sc-title">{item.crystals} кристаллов</div>
                 <div className="sc-desc">
-                  {p.bonusLabel ? <span className="sc-bonus">Бонус {p.bonusLabel}</span> : 'Без бонуса'}
+                  <span className="sc-stars">⭐ {item.stars} звёзд</span>
                 </div>
               </div>
             </div>
 
             <div className="sc-right">
-              <button className="sc-buy" onClick={() => {}}>
-                Купить · {p.priceLabel}
+              <button className="sc-buy" onClick={() => handleBuy(item)}>
+                Купить · ⭐{item.stars}
               </button>
             </div>
           </div>

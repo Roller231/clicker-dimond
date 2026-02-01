@@ -1,58 +1,55 @@
+import { useEffect } from 'react'
 import './Tasks.css'
+import { useUser } from '../context/UserContext'
 
 type Props = {
   balance: number
 }
 
-type TaskItem = {
-  id: string
-  title: string
-  desc: string
-  reward: number
-  statusLabel: string
-}
-
 export default function Tasks({ balance }: Props) {
-  const daily: TaskItem[] = [
-    {
-      id: 'd1',
-      title: 'Сделать 50 кликов',
-      desc: 'Кликай по алмазу 50 раз',
-      reward: 50,
-      statusLabel: 'В процессе',
-    },
-    {
-      id: 'd2',
-      title: 'Собрать 300 💎',
-      desc: 'Накопи 300 кристаллов',
-      reward: 75,
-      statusLabel: 'Не начато',
-    },
-    {
-      id: 'd3',
-      title: 'Купить 1 улучшение',
-      desc: 'Зайди в улучшения и купи любой апгрейд',
-      reward: 100,
-      statusLabel: 'Не начато',
-    },
-  ]
+  const { tasks, handleClaimTask, refreshTasks } = useUser()
 
-  const weekly: TaskItem[] = [
-    {
-      id: 'w1',
-      title: 'Сделать 1000 кликов',
-      desc: 'Набери 1000 кликов за неделю',
-      reward: 500,
-      statusLabel: 'В процессе',
-    },
-    {
-      id: 'w2',
-      title: 'Накопить 10 000 💎',
-      desc: 'Собери большую сумму кристаллов',
-      reward: 800,
-      statusLabel: 'Не начато',
-    },
-  ]
+  // Обновляем задания при заходе на страницу
+  useEffect(() => {
+    refreshTasks()
+  }, [refreshTasks])
+
+  const daily = tasks.filter(t => t.taskType === 'daily')
+  const weekly = tasks.filter(t => t.taskType === 'weekly')
+
+  const handleClaim = async (taskId: number) => {
+    const success = await handleClaimTask(taskId)
+    if (success) {
+      await refreshTasks()
+    }
+  }
+
+  const renderTaskCard = (t: typeof tasks[0]) => {
+    const canClaim = t.isCompleted && !t.isClaimed
+    const progressPercent = Math.min(100, Math.round((t.progress / t.targetValue) * 100))
+
+    return (
+      <div className="task-card" key={t.taskId}>
+        <div className="tc-left">
+          <div className="tc-title">{t.title}</div>
+          <div className="tc-desc">{t.description}</div>
+
+          <div className="tc-meta">
+            <span className="tc-reward">+{t.reward} 💎</span>
+            <span className="tc-progress">{t.progress}/{t.targetValue} ({progressPercent}%)</span>
+          </div>
+        </div>
+
+        <button
+          className={`tc-action ${canClaim ? '' : 'disabled'}`}
+          onClick={() => canClaim && handleClaim(t.taskId)}
+          disabled={!canClaim}
+        >
+          {t.isClaimed ? '✓' : canClaim ? 'Забрать' : `${progressPercent}%`}
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="tasks-page page-with-particles">
@@ -74,22 +71,9 @@ export default function Tasks({ balance }: Props) {
           </div>
 
           <div className="ts-items">
-            {daily.map((t) => (
-              <div className="task-card" key={t.id}>
-                <div className="tc-left">
-                  <div className="tc-title">{t.title}</div>
-                  <div className="tc-desc">{t.desc}</div>
-
-                  <div className="tc-meta">
-                    <span className="tc-reward">+{t.reward} 💎</span>
-                  </div>
-                </div>
-
-                <button className="tc-action" onClick={() => {}}>
-                  Забрать
-                </button>
-              </div>
-            ))}
+            {daily.length > 0 ? daily.map(renderTaskCard) : (
+              <div className="tasks-empty">Нет заданий</div>
+            )}
           </div>
         </div>
 
@@ -100,22 +84,9 @@ export default function Tasks({ balance }: Props) {
           </div>
 
           <div className="ts-items">
-            {weekly.map((t) => (
-              <div className="task-card" key={t.id}>
-                <div className="tc-left">
-                  <div className="tc-title">{t.title}</div>
-                  <div className="tc-desc">{t.desc}</div>
-
-                  <div className="tc-meta">
-                    <span className="tc-reward">+{t.reward} 💎</span>
-                  </div>
-                </div>
-
-                <button className="tc-action" onClick={() => {}}>
-                  Забрать
-                </button>
-              </div>
-            ))}
+            {weekly.length > 0 ? weekly.map(renderTaskCard) : (
+              <div className="tasks-empty">Нет заданий</div>
+            )}
           </div>
         </div>
       </div>
