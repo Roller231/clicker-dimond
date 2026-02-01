@@ -20,25 +20,29 @@ export default function Shop({ balance }: Props) {
       .finally(() => setLoading(false))
   }, [])
 
-  const handleBuy = (item: api.ShopItem) => {
-    // Открываем Telegram Stars invoice
-    // В реальном приложении invoiceUrl приходит с бэкенда
-    const fakeInvoiceUrl = `https://t.me/$pay?slug=stars_${item.id}`
-    
-    openStarsInvoice(
-      fakeInvoiceUrl,
-      async (paymentId) => {
-        // Платёж успешен - отправляем на бэкенд
-        const success = await handlePurchase(item.id, paymentId)
-        if (success) {
-          alert(`Успешно! +${item.crystals} 💎`)
+  const handleBuy = async (item: api.ShopItem) => {
+    try {
+      // Получаем реальный invoice URL с бэкенда
+      const invoiceUrl = await api.createStarsInvoice(item.id)
+      
+      openStarsInvoice(
+        invoiceUrl,
+        async (paymentId) => {
+          // Платёж успешен - отправляем на бэкенд
+          const success = await handlePurchase(item.id, paymentId)
+          if (success) {
+            alert(`Успешно! +${item.crystals} 💎`)
+          }
+        },
+        () => {
+          // Платёж отменён
+          console.log('Payment cancelled')
         }
-      },
-      () => {
-        // Платёж отменён
-        console.log('Payment cancelled')
-      }
-    )
+      )
+    } catch (error) {
+      console.error('Failed to create invoice:', error)
+      alert('Ошибка создания платежа. Попробуйте позже.')
+    }
   }
 
   return (

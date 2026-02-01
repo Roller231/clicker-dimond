@@ -2,10 +2,10 @@
   width: 100%;
   max-width: 420px;
   height: 100vh;
-
+  padding: 150px;
   display: flex;
   flex-direction: column;
-
+  
   background: #0E1621;
   position: relative;
   overflow: hidden;
@@ -18,9 +18,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
+  margin-top: 80px;
   padding: 14px 16px;
-
+  
   border-radius: 20px;
 
   background: linear-gradient(180deg, #1e2a38, #17212b);

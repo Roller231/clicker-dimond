@@ -215,6 +215,20 @@ export async function getTransferHistory(userId: number, limit: number = 50): Pr
 // ─────────────────────────────────────────────────────────────
 // Stars (Donation) API
 // ─────────────────────────────────────────────────────────────
+export async function createStarsInvoice(shopItemId: number): Promise<string> {
+  const res = await fetch(`${API_BASE}/stars/create-invoice`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ shop_item_id: shopItemId }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
+    throw new Error(error.detail || 'Failed to create invoice');
+  }
+  const data = await res.json();
+  return data.invoice_url;
+}
+
 export async function processStarsPayment(
   userId: number,
   shopItemId: number,

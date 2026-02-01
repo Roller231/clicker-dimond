@@ -2,9 +2,15 @@ import { useState, useEffect } from 'react'
 import './Exchange.css'
 import { useUser } from '../context/UserContext'
 import * as api from '../api/client'
+import Toast, { type ToastType } from '../components/Toast'
 
 type Props = {
   balance: number
+}
+
+interface ToastState {
+  message: string
+  type: ToastType
 }
 
 export default function Exchange({ balance }: Props) {
@@ -13,6 +19,11 @@ export default function Exchange({ balance }: Props) {
   const [amount, setAmount] = useState('')
   const [history, setHistory] = useState<api.TransferHistory[]>([])
   const [sending, setSending] = useState(false)
+  const [toast, setToast] = useState<ToastState | null>(null)
+
+  const showToast = (message: string, type: ToastType) => {
+    setToast({ message, type })
+  }
 
   useEffect(() => {
     if (user) {
@@ -27,12 +38,12 @@ export default function Exchange({ balance }: Props) {
     
     const amountNum = parseInt(amount, 10)
     if (isNaN(amountNum) || amountNum <= 0) {
-      alert('Введите корректную сумму')
+      showToast('Введите корректную сумму', 'error')
       return
     }
 
     if (amountNum > balance) {
-      alert('Недостаточно кристаллов')
+      showToast('Недостаточно кристаллов', 'error')
       return
     }
 
@@ -40,7 +51,7 @@ export default function Exchange({ balance }: Props) {
     try {
       const success = await handleTransfer(receiver.replace('@', ''), amountNum)
       if (success) {
-        alert(`Успешно отправлено ${amountNum} 💎`)
+        showToast(`Успешно отправлено ${amountNum} 💎`, 'success')
         setReceiver('')
         setAmount('')
         await refreshUser()
@@ -49,10 +60,10 @@ export default function Exchange({ balance }: Props) {
           setHistory(newHistory)
         }
       } else {
-        alert('Ошибка перевода. Проверьте получателя.')
+        showToast('Пользователь не найден', 'error')
       }
     } catch {
-      alert('Ошибка перевода')
+      showToast('Ошибка перевода', 'error')
     } finally {
       setSending(false)
     }
@@ -61,6 +72,7 @@ export default function Exchange({ balance }: Props) {
   return (
     <div className="exchange-page page-with-particles">
       <div className="page-particles" />
+
       <div className="exchange-header">
         <div className="exchange-title">Обмен</div>
 
@@ -69,6 +81,14 @@ export default function Exchange({ balance }: Props) {
           <span className="eb-value">{balance}</span>
         </div>
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       <div className="exchange-scroll">
         <div className="exchange-center">

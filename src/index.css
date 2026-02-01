@@ -23,6 +23,7 @@ body {
 .page-with-particles {
   position: relative;
   overflow: hidden;
+  padding-top: 80px;
 }
 
 .page-particles {
