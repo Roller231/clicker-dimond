@@ -1,0 +1,71 @@
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  z-index: 10;
+
+  height: 72px;
+  width: 100%;
+  max-width: 420px;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  padding: 8px 6px 10px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(23, 33, 43, 0.9),
+    rgba(14, 22, 33, 0.95)
+  );
+
+  backdrop-filter: blur(8px);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .bottom-nav {
+    max-width: 100%;
+  }
+}
+
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+
+  font-size: 11px;
+  color: rgba(232, 238, 244, 0.6);
+
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nav-item.active {
+  color: #ffffff;
+}
+
+.nav-emoji {
+  font-size: 20px;
+}
+
+/* ЦЕНТРАЛЬНАЯ КНОПКА */
+.nav-item.center {
+  transform: translateY(-10px);
+}
+
+.nav-item.center .nav-emoji {
+  font-size: 28px;
+}
+
+.nav-item.center.active .nav-emoji {
+  filter: drop-shadow(0 0 10px rgba(46, 166, 255, 0.8));
+}
