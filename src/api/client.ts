@@ -278,3 +278,10 @@ export async function sendChatMessage(userId: number, text: string): Promise<Cha
   if (!res.ok) throw new Error('Failed to send message');
   return res.json();
 }
+
+export async function getClickValue(): Promise<number> {
+  const res = await fetch(`${API_BASE}/settings/click-value`);
+  if (!res.ok) return 1;
+  const data = await res.json();
+  return data.click_value || 1;
+}

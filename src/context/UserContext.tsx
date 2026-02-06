@@ -76,6 +76,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<TaskData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [baseClickValue, setBaseClickValue] = useState<number>(1);
 
   // ─────────────────────────────────────────────────────────────
   // Init user from Telegram or local
@@ -112,11 +113,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
         lastEnergyUpdate: apiUser.last_energy_update,
       });
 
-      // Load upgrades and tasks
-      const [userUpgrades, userTasks] = await Promise.all([
+      // Load upgrades, tasks and click value
+      const [userUpgrades, userTasks, clickValue] = await Promise.all([
         api.getUserUpgrades(apiUser.id),
         api.getUserTasks(apiUser.id),
+        api.getClickValue(),
       ]);
+
+      setBaseClickValue(clickValue);
 
       setUpgrades(userUpgrades.map(u => ({
         key: u.upgrade_key,
@@ -330,8 +334,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, [upgrades]);
 
   const getClickPower = useCallback((): number => {
-    return 1 + getUpgradeLevel('click');
-  }, [getUpgradeLevel]);
+    return baseClickValue + getUpgradeLevel('click');
+  }, [baseClickValue, getUpgradeLevel]);
 
   const getPassiveIncome = useCallback((): number => {
     const autoclick = getUpgradeLevel('autoclick') * 0.5;
