@@ -23,7 +23,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from config import (
+from .config import (
     BOT_TOKEN,
     BOT_USERNAME,
     WEBAPP_URL,
