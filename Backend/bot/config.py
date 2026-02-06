@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 env_path = Path(__file__).parent.parent / ".env"
 load_dotenv(env_path)
 
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8304448437:AAEO-hnljONqjwoPg7f5jxK9pb9gknXV520")
 BOT_USERNAME = os.getenv("BOT_USERNAME", "DIMOND_DDDD_BOT")
 
 # WebApp URL

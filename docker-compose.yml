@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: clicker-diamond-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 141722
+      MYSQL_DATABASE: clicker_diamond
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: clicker-diamond-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: mysql+pymysql://root:141722@db:3306/clicker_diamond
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: 141722
+      DB_NAME: clicker_diamond
+    depends_on:
+      db:
+        condition: service_healthy
+
+  bot:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile.bot
+    container_name: clicker-diamond-bot
+    restart: unless-stopped
+    environment:
+      TELEGRAM_BOT_TOKEN: 8304448437:AAEO-hnljONqjwoPg7f5jxK9pb9gknXV520
+      BOT_USERNAME: DIMOND_DDDD_BOT
+      WEBAPP_URL: https://clicker-dimond.vercel.app/
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: 141722
+      DB_NAME: clicker_diamond
+      API_URL: http://backend:8000
+    depends_on:
+      db:
+        condition: service_healthy
+      backend:
+        condition: service_started
+
+volumes:
+  mysql_data:
