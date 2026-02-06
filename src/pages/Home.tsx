@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import TopBar from '../components/TopBar'
 import Diamond from '../components/Diamond'
 import BottomBar from '../components/BottomBar'
+import Chat from '../components/Chat'
 
 import './Home.css'
 
@@ -14,6 +16,8 @@ type Props = {
 }
 
 export default function Home({ balance, energy, maxEnergy, passive, onBalanceChange, onOpenTop }: Props) {
+  const [isChatOpen, setIsChatOpen] = useState(false)
+
   const onDiamondClick = () => {
     if (energy <= 0) return
     onBalanceChange(1)
@@ -29,6 +33,9 @@ export default function Home({ balance, energy, maxEnergy, passive, onBalanceCha
   {/* БАЛАНС */}
   <div className="home-balance-row">
     <TopBar balance={balance} />
+    <button className="home-top-btn" onClick={() => setIsChatOpen(true)}>
+      💬
+    </button>
     <button className="home-top-btn" onClick={onOpenTop}>
       🏆
     </button>
@@ -39,6 +46,7 @@ export default function Home({ balance, energy, maxEnergy, passive, onBalanceCha
     <Diamond onClick={onDiamondClick} />
   </div>
 
+  {isChatOpen && <Chat onClose={() => setIsChatOpen(false)} />}
 </div>
 
   )

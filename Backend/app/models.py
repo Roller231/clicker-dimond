@@ -164,3 +164,18 @@ class AdminSettings(Base):
     value = Column(Text, nullable=True)  # значение
     description = Column(String(255), nullable=True)  # описание для админки
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+# ─────────────────────────────────────────────────────────────
+# Внутриигровой чат
+# ─────────────────────────────────────────────────────────────
+class ChatMessage(Base):
+    """Сообщение в общем чате."""
+    __tablename__ = "chat_messages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    text = Column(String(500), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User")

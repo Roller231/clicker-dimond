@@ -493,3 +493,23 @@ def set_admin_setting(db: Session, name: str, value: str, description: str = "")
     db.commit()
     db.refresh(setting)
     return setting
+
+
+# ─────────────────────────────────────────────────────────────
+# Chat CRUD
+# ─────────────────────────────────────────────────────────────
+def create_chat_message(db: Session, user_id: int, text: str) -> models.ChatMessage:
+    """Создать сообщение в чате."""
+    msg = models.ChatMessage(user_id=user_id, text=text[:500])
+    db.add(msg)
+    db.commit()
+    db.refresh(msg)
+    return msg
+
+
+def get_chat_messages(db: Session, limit: int = 50, before_id: Optional[int] = None) -> List[models.ChatMessage]:
+    """Получить последние сообщения чата."""
+    query = db.query(models.ChatMessage)
+    if before_id:
+        query = query.filter(models.ChatMessage.id < before_id)
+    return query.order_by(desc(models.ChatMessage.id)).limit(limit).all()

@@ -4,7 +4,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .database import engine, Base
-from .routers import users, upgrades, transfers, shop, tasks, stars, settings
+from .routers import users, upgrades, transfers, shop, tasks, stars, settings, chat
 from .scheduler import start_scheduler, stop_scheduler
 from .admin import setup_admin
 from . import crud, schemas
@@ -68,6 +68,7 @@ app.include_router(shop.router)
 app.include_router(tasks.router)
 app.include_router(stars.router)
 app.include_router(settings.router)
+app.include_router(chat.router)
 
 
 @app.on_event("startup")

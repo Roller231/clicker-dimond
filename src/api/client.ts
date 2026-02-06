@@ -247,3 +247,34 @@ export async function processStarsPayment(
   if (!res.ok) throw new Error('Stars payment failed');
   return res.json();
 }
+
+// ─────────────────────────────────────────────────────────────
+// Chat API
+// ─────────────────────────────────────────────────────────────
+export interface ChatMessage {
+  id: number;
+  user_id: number;
+  username: string | null;
+  first_name: string | null;
+  url_image: string | null;
+  text: string;
+  created_at: string;
+}
+
+export async function getChatMessages(limit: number = 50, beforeId?: number): Promise<ChatMessage[]> {
+  let url = `${API_BASE}/chat/messages?limit=${limit}`;
+  if (beforeId) url += `&before_id=${beforeId}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to get chat messages');
+  return res.json();
+}
+
+export async function sendChatMessage(userId: number, text: string): Promise<ChatMessage> {
+  const res = await fetch(`${API_BASE}/chat/messages/${userId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) throw new Error('Failed to send message');
+  return res.json();
+}

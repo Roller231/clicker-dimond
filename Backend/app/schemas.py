@@ -269,3 +269,23 @@ class UserTaskWithDetails(BaseModel):
 
 class ClaimTaskRequest(BaseModel):
     task_id: int
+
+
+# ─────────────────────────────────────────────────────────────
+# Chat (внутриигровой чат)
+# ─────────────────────────────────────────────────────────────
+class ChatMessageCreate(BaseModel):
+    text: str
+
+
+class ChatMessageOut(BaseModel):
+    id: int
+    user_id: int
+    username: Optional[str] = None
+    first_name: Optional[str] = None
+    url_image: Optional[str] = None
+    text: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
