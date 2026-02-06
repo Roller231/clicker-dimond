@@ -136,6 +136,9 @@ export default function Shop({ balance }: Props) {
                 <div className="sc-title">{item.crystals} кристаллов</div>
                 <div className="sc-desc">
                   <span className="sc-stars">⭐ {item.stars} звёзд</span>
+                  {item.ton_price && (
+                    <span className="sc-ton"> · 💎 {item.ton_price} TON</span>
+                  )}
                 </div>
               </div>
             </div>

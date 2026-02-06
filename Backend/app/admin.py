@@ -195,6 +195,7 @@ class ShopItemAdmin(ModelView, model=models.ShopItem):
         models.ShopItem.id,
         models.ShopItem.crystals,
         models.ShopItem.stars,
+        models.ShopItem.ton_price,
         models.ShopItem.is_active,
         models.ShopItem.created_at,
     ]
@@ -203,6 +204,7 @@ class ShopItemAdmin(ModelView, model=models.ShopItem):
         models.ShopItem.id: "ID",
         models.ShopItem.crystals: "Кристаллы",
         models.ShopItem.stars: "Звёзды",
+        models.ShopItem.ton_price: "Цена в TON",
         models.ShopItem.is_active: "Активен",
         models.ShopItem.created_at: "Создан",
     }

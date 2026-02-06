@@ -13,7 +13,7 @@ BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8304448437:AAEO-hnljONqjwoPg7f5jxK9
 BOT_USERNAME = os.getenv("BOT_USERNAME", "DIMOND_DDDD_BOT")
 
 # WebApp URL
-WEBAPP_URL = os.getenv("WEBAPP_URL", "https://your-webapp-url.vercel.app/")
+WEBAPP_URL = os.getenv("WEBAPP_URL", "https://clicker-dimond.vercel.app/")
 
 # Admin Telegram IDs
 ADMIN_TG_IDS = {

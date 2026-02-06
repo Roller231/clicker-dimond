@@ -252,6 +252,7 @@ def create_shop_item(db: Session, item: schemas.ShopItemCreate) -> models.ShopIt
     db_item = models.ShopItem(
         crystals=item.crystals,
         stars=item.stars,
+        ton_price=item.ton_price,
     )
     db.add(db_item)
     db.commit()
@@ -468,3 +469,27 @@ def reset_tasks_for_period(db: Session, task_type: str) -> int:
     
     db.commit()
     return deleted
+
+
+# ─────────────────────────────────────────────────────────────
+# Admin Settings CRUD
+# ─────────────────────────────────────────────────────────────
+def get_admin_setting(db: Session, name: str) -> Optional[str]:
+    """Получить значение настройки по ключу."""
+    setting = db.query(models.AdminSettings).filter(models.AdminSettings.name == name).first()
+    return setting.value if setting else None
+
+
+def set_admin_setting(db: Session, name: str, value: str, description: str = "") -> models.AdminSettings:
+    """Создать или обновить настройку."""
+    setting = db.query(models.AdminSettings).filter(models.AdminSettings.name == name).first()
+    if setting:
+        setting.value = value
+        if description:
+            setting.description = description
+    else:
+        setting = models.AdminSettings(name=name, value=value, description=description)
+        db.add(setting)
+    db.commit()
+    db.refresh(setting)
+    return setting

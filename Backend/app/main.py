@@ -4,7 +4,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .database import engine, Base
-from .routers import users, upgrades, transfers, shop, tasks, stars
+from .routers import users, upgrades, transfers, shop, tasks, stars, settings
 from .scheduler import start_scheduler, stop_scheduler
 from .admin import setup_admin
 from . import crud, schemas
@@ -67,6 +67,7 @@ app.include_router(transfers.router)
 app.include_router(shop.router)
 app.include_router(tasks.router)
 app.include_router(stars.router)
+app.include_router(settings.router)
 
 
 @app.on_event("startup")
@@ -112,6 +113,11 @@ def on_startup():
         if not existing_tasks:
             for task in default_tasks:
                 crud.create_task(db, task)
+        # Создаём настройку click_value если не существует
+        existing_click_value = crud.get_admin_setting(db, "click_value")
+        if not existing_click_value:
+            crud.set_admin_setting(db, "click_value", "0.5", "Базовое значение за клик (без улучшений)")
+
     finally:
         db.close()
 

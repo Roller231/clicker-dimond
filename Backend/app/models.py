@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, BigInteger, String, DateTime, ForeignKey, Text, Boolean, Date
+from sqlalchemy import Column, Integer, BigInteger, String, DateTime, ForeignKey, Text, Boolean, Date, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -76,6 +76,7 @@ class ShopItem(Base):
     id = Column(Integer, primary_key=True, index=True)
     crystals = Column(Integer, nullable=False)  # количество кристаллов
     stars = Column(Integer, nullable=False)     # цена в звёздах (реальная валюта)
+    ton_price = Column(Float, nullable=True, default=None)  # цена в TON (дробное)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

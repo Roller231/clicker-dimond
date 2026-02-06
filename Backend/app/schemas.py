@@ -160,6 +160,7 @@ class ClickRequest(BaseModel):
 class ShopItemBase(BaseModel):
     crystals: int
     stars: int
+    ton_price: Optional[float] = None
 
 
 class ShopItemCreate(ShopItemBase):
@@ -169,6 +170,7 @@ class ShopItemCreate(ShopItemBase):
 class ShopItemUpdate(BaseModel):
     crystals: Optional[int] = None
     stars: Optional[int] = None
+    ton_price: Optional[float] = None
     is_active: Optional[bool] = None
 
 

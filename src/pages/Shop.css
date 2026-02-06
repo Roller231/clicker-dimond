@@ -130,6 +130,11 @@
   text-overflow: ellipsis;
 }
 
+.sc-ton {
+  color: rgba(46, 166, 255, 0.9);
+  font-weight: 700;
+}
+
 .sc-bonus {
   color: rgba(255, 210, 80, 0.9);
   font-weight: 700;

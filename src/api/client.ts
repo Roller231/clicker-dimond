@@ -44,6 +44,7 @@ export interface ShopItem {
   id: number;
   crystals: number;
   stars: number;
+  ton_price: number | null;
   is_active: boolean;
 }
 

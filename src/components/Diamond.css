@@ -1,4 +1,11 @@
-.diamond-button {
+.diamond-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .diamond-button {
     background: none;
     border: none;
     padding: 0;
@@ -7,6 +14,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .tap-label {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: rgba(46, 166, 255, 0.7);
+    text-shadow:
+      0 0 10px rgba(46, 166, 255, 0.4),
+      0 0 20px rgba(46, 166, 255, 0.2);
+    animation: tapPulse 2s ease-in-out infinite;
+    user-select: none;
+  }
+
+  @keyframes tapPulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
   }
   
   /* картинка алмаза */
