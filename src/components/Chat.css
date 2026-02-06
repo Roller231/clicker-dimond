@@ -23,7 +23,8 @@
 .chat-modal {
   width: 100%;
   max-width: 420px;
-  height: 85vh;
+  height: 80vh;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
 
@@ -35,6 +36,7 @@
 
   animation: chatSlideUp 0.25s ease;
   overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 @keyframes chatSlideUp {

@@ -20,6 +20,13 @@ with engine.connect() as conn:
     except Exception:
         conn.rollback()  # колонка уже существует — игнорируем
 
+    # Задаём ton_price для товаров, где он не установлен (stars * 0.1 TON)
+    try:
+        conn.execute(text("UPDATE shop_items SET ton_price = stars * 0.1 WHERE ton_price IS NULL"))
+        conn.commit()
+    except Exception:
+        conn.rollback()
+
 # Создаём новые таблицы при старте (chat_messages, etc.)
 Base.metadata.create_all(bind=engine)
 

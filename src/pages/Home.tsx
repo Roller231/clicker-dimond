@@ -24,6 +24,7 @@ export default function Home({ balance, energy, maxEnergy, passive, onBalanceCha
   }
 
   return (
+<>
 <div className="home page-with-particles">
   <div className="page-particles" />
 
@@ -45,9 +46,10 @@ export default function Home({ balance, energy, maxEnergy, passive, onBalanceCha
   <div className="home-center">
     <Diamond onClick={onDiamondClick} />
   </div>
-
-  {isChatOpen && <Chat onClose={() => setIsChatOpen(false)} />}
 </div>
+
+{isChatOpen && <Chat onClose={() => setIsChatOpen(false)} />}
+</>
 
   )
   
