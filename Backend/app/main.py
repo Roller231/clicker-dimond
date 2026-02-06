@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .database import engine, Base
 from .routers import users, upgrades, transfers, shop, tasks, stars
@@ -21,7 +21,24 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+
+class ForwardedProtoMiddleware:
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        if scope["type"] == "http":
+            headers = dict(scope.get("headers") or [])
+            forwarded_proto = headers.get(b"x-forwarded-proto")
+            if forwarded_proto:
+                try:
+                    scope["scheme"] = forwarded_proto.decode("utf-8").split(",")[0].strip()
+                except Exception:
+                    pass
+        await self.app(scope, receive, send)
+
+
+app.add_middleware(ForwardedProtoMiddleware)
 
 # CORS для фронтенда
 app.add_middleware(
