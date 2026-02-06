@@ -27,6 +27,13 @@ with engine.connect() as conn:
     except Exception:
         conn.rollback()
 
+    # Миграция: balance из BIGINT в DOUBLE для дробных значений
+    try:
+        conn.execute(text("ALTER TABLE users MODIFY COLUMN balance DOUBLE DEFAULT 0.0"))
+        conn.commit()
+    except Exception:
+        conn.rollback()
+
 # Создаём новые таблицы при старте (chat_messages, etc.)
 Base.metadata.create_all(bind=engine)
 

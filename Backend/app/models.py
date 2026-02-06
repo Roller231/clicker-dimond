@@ -14,7 +14,7 @@ class User(Base):
     first_name = Column(String(255), nullable=True)
     last_name = Column(String(255), nullable=True)
     url_image = Column(Text, nullable=True)
-    balance = Column(BigInteger, default=0, nullable=False)
+    balance = Column(Float, default=0.0, nullable=False)
     energy = Column(Integer, default=100, nullable=False)
     max_energy = Column(Integer, default=100, nullable=False)
     last_energy_update = Column(DateTime(timezone=True), server_default=func.now())

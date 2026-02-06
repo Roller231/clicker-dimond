@@ -97,13 +97,13 @@ def click(user_id: int, req: schemas.ClickRequest, db: Session = Depends(get_db)
         if user_upgrade:
             click_power = base_click_value + user_upgrade.level
 
-    amount = max(1, int(req.clicks * click_power))
+    amount = req.clicks * click_power
     user = crud.add_balance(db, user, amount)
 
     # Обновляем прогресс заданий на клики
     crud.update_task_progress(db, user.id, "click", req.clicks)
     # Обновляем прогресс заданий на заработок
-    crud.update_task_progress(db, user.id, "earn", amount)
+    crud.update_task_progress(db, user.id, "earn", int(amount))
 
     return user
 
@@ -129,10 +129,10 @@ def passive_income(user_id: int, req: schemas.ClickRequest, db: Session = Depend
         if user_upgrade:
             click_power = base_click_value + user_upgrade.level
 
-    amount = max(1, int(req.clicks * click_power))
+    amount = req.clicks * click_power
     user = crud.add_balance(db, user, amount)
 
     # Обновляем прогресс заданий на заработок (но не на клики)
-    crud.update_task_progress(db, user.id, "earn", amount)
+    crud.update_task_progress(db, user.id, "earn", int(amount))
 
     return user

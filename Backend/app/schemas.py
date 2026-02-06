@@ -23,12 +23,12 @@ class UserUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     url_image: Optional[str] = None
-    balance: Optional[int] = None
+    balance: Optional[float] = None
 
 
 class UserOut(UserBase):
     id: int
-    balance: int
+    balance: float
     energy: int
     max_energy: int
     last_energy_update: datetime
@@ -45,7 +45,7 @@ class UserLeaderboard(BaseModel):
     username: Optional[str]
     first_name: Optional[str]
     url_image: Optional[str]
-    balance: int
+    balance: float
 
     class Config:
         from_attributes = True
@@ -147,7 +147,7 @@ class TransferHistory(BaseModel):
 # Balance
 # ─────────────────────────────────────────────────────────────
 class AddBalanceRequest(BaseModel):
-    amount: int
+    amount: float
 
 
 class ClickRequest(BaseModel):
