@@ -86,8 +86,8 @@ def click(user_id: int, req: schemas.ClickRequest, db: Session = Depends(get_db)
     if not crud.consume_energy(db, user, req.clicks):
         raise HTTPException(status_code=400, detail="Not enough energy")
 
-    # Базовое значение клика из админ-настроек (по умолчанию 0.5)
-    base_click_value = float(crud.get_admin_setting(db, "click_value") or "0.5")
+    # Базовое значение клика из админ-настроек (по умолчанию 1)
+    base_click_value = float(crud.get_admin_setting(db, "click_value") or "1")
 
     # Получаем уровень улучшения клика
     click_upgrade = crud.get_upgrade_by_key(db, "click")
@@ -97,7 +97,7 @@ def click(user_id: int, req: schemas.ClickRequest, db: Session = Depends(get_db)
         if user_upgrade:
             click_power = base_click_value + user_upgrade.level
 
-    amount = int(req.clicks * click_power)
+    amount = max(1, int(req.clicks * click_power))
     user = crud.add_balance(db, user, amount)
 
     # Обновляем прогресс заданий на клики
@@ -118,8 +118,8 @@ def passive_income(user_id: int, req: schemas.ClickRequest, db: Session = Depend
     # Восстанавливаем энергию (но не тратим)
     user = crud.get_user_with_regenerated_energy(db, user)
 
-    # Базовое значение клика из админ-настроек (по умолчанию 0.5)
-    base_click_value = float(crud.get_admin_setting(db, "click_value") or "0.5")
+    # Базовое значение клика из админ-настроек (по умолчанию 1)
+    base_click_value = float(crud.get_admin_setting(db, "click_value") or "1")
 
     # Получаем уровень улучшения клика
     click_upgrade = crud.get_upgrade_by_key(db, "click")
@@ -129,7 +129,7 @@ def passive_income(user_id: int, req: schemas.ClickRequest, db: Session = Depend
         if user_upgrade:
             click_power = base_click_value + user_upgrade.level
 
-    amount = int(req.clicks * click_power)
+    amount = max(1, int(req.clicks * click_power))
     user = crud.add_balance(db, user, amount)
 
     # Обновляем прогресс заданий на заработок (но не на клики)

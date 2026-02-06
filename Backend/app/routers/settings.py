@@ -10,5 +10,5 @@ router = APIRouter(prefix="/settings", tags=["Settings"])
 @router.get("/click-value")
 def get_click_value(db: Session = Depends(get_db)):
     """Получить базовое значение клика."""
-    value = crud.get_admin_setting(db, "click_value") or "0.5"
+    value = crud.get_admin_setting(db, "click_value") or "1"
     return {"click_value": float(value)}
