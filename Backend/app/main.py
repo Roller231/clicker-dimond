@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.types import ASGIApp, Receive, Scope, Send
 
+from sqlalchemy import text
+
 from .database import engine, Base
 from .routers import users, upgrades, transfers, shop, tasks, stars, settings, chat
 from .scheduler import start_scheduler, stop_scheduler
@@ -10,7 +12,15 @@ from .admin import setup_admin
 from . import crud, schemas
 from .database import SessionLocal
 
-# Создаём таблицы при старте
+# Миграция: добавляем новые колонки к существующим таблицам
+with engine.connect() as conn:
+    try:
+        conn.execute(text("ALTER TABLE shop_items ADD COLUMN ton_price FLOAT DEFAULT NULL"))
+        conn.commit()
+    except Exception:
+        conn.rollback()  # колонка уже существует — игнорируем
+
+# Создаём новые таблицы при старте (chat_messages, etc.)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
