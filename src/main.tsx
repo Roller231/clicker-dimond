@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { TonConnectUIProvider } from '@tonconnect/ui-react'
 import './index.css'
 import App from './App.tsx'
 import { UserProvider } from './context/UserContext.tsx'
@@ -35,8 +36,10 @@ document.addEventListener('gestureend', (e) => {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <UserProvider>
-      <App />
-    </UserProvider>
+    <TonConnectUIProvider manifestUrl="https://clicker-dimond.vercel.app/tonconnect-manifest.json">
+      <UserProvider>
+        <App />
+      </UserProvider>
+    </TonConnectUIProvider>
   </StrictMode>,
 )

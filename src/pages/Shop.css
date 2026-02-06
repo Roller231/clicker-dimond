@@ -166,6 +166,42 @@
   transform: scale(0.98);
 }
 
+.sc-buy:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.sc-buy-ton {
+  background: linear-gradient(135deg, #0098EA, #0077CC);
+  color: #fff;
+}
+
+.shop-wallet-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(0, 152, 234, 0.1);
+  border: 1px solid rgba(0, 152, 234, 0.2);
+  align-self: flex-start;
+}
+
+.wallet-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ADE80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.6);
+}
+
+.wallet-addr {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0, 152, 234, 0.9);
+  font-family: monospace;
+}
+
 /* Success effect overlay */
 .success-overlay {
   position: fixed;

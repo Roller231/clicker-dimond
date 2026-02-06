@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from 'react'
+import { useTonConnectUI, useTonAddress } from '@tonconnect/ui-react'
 import './Shop.css'
 import { useUser } from '../context/UserContext'
 import * as api from '../api/client'
 
-const API_BASE = 'http://localhost:8000'
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const TON_WALLET = 'UQA2ObMyh233b2ES8aSj7-T6oaeoETELdws9lBwm-i66hKEv'
 
 type Props = {
   balance: number
@@ -11,6 +13,9 @@ type Props = {
 
 export default function Shop({ balance }: Props) {
   const { user, refreshUser } = useUser()
+  const [tonConnectUI] = useTonConnectUI()
+  const walletAddress = useTonAddress()
+
   const [shopItems, setShopItems] = useState<api.ShopItem[]>([])
   const [loading, setLoading] = useState(true)
   const [buying, setBuying] = useState(false)
@@ -24,7 +29,7 @@ export default function Shop({ balance }: Props) {
       .finally(() => setLoading(false))
   }, [])
 
-  // Слушаем событие invoiceClosed от Telegram
+  // Слушаем событие invoiceClosed от Telegram (для Stars)
   useEffect(() => {
     if (!user) return
 
@@ -58,7 +63,8 @@ export default function Shop({ balance }: Props) {
     }
   }, [user, refreshUser])
 
-  const handleBuy = async (item: api.ShopItem) => {
+  // ─── Покупка за Stars ───
+  const handleBuyStars = async (item: api.ShopItem) => {
     if (!user || buying) return
     setBuying(true)
     currentItemRef.current = item
@@ -67,10 +73,7 @@ export default function Shop({ balance }: Props) {
       const res = await fetch(`${API_BASE}/stars/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          shop_item_id: item.id,
-          user_id: user.id
-        })
+        body: JSON.stringify({ shop_item_id: item.id, user_id: user.id })
       })
 
       if (!res.ok) {
@@ -79,12 +82,10 @@ export default function Shop({ balance }: Props) {
       }
 
       const data = await res.json()
-      
-      // Открываем invoice в Telegram
+
       if (window.Telegram?.WebApp?.openInvoice) {
         window.Telegram.WebApp.openInvoice(data.invoice_link)
       } else {
-        // Для локального тестирования - сразу подтверждаем
         console.log('Local test: simulating payment')
         await fetch(`${API_BASE}/stars/success`, {
           method: 'POST',
@@ -99,6 +100,65 @@ export default function Shop({ balance }: Props) {
       }
     } catch (error) {
       console.error('Failed to create invoice:', error)
+      setBuying(false)
+      currentItemRef.current = null
+    }
+  }
+
+  // ─── Покупка за TON ───
+  const handleBuyTon = async (item: api.ShopItem) => {
+    if (!user || buying || !item.ton_price) return
+
+    // Если кошелёк не подключен — открываем подключение
+    if (!walletAddress) {
+      try {
+        await tonConnectUI.openModal()
+      } catch (e) {
+        console.error('Wallet connect cancelled', e)
+      }
+      return
+    }
+
+    setBuying(true)
+    currentItemRef.current = item
+
+    try {
+      // Конвертируем TON в нанотоны (1 TON = 10^9 nanoTON)
+      const nanotons = Math.floor(item.ton_price * 1_000_000_000).toString()
+
+      const tx = {
+        validUntil: Math.floor(Date.now() / 1000) + 600, // 10 минут
+        messages: [
+          {
+            address: TON_WALLET,
+            amount: nanotons,
+          }
+        ]
+      }
+
+      const result = await tonConnectUI.sendTransaction(tx)
+
+      // Транзакция отправлена — подтверждаем на бэкенде
+      const res = await fetch(`${API_BASE}/stars/ton-confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          shop_item_id: item.id,
+          boc: result.boc,
+        })
+      })
+
+      if (!res.ok) {
+        throw new Error('TON confirm failed')
+      }
+
+      await refreshUser()
+      setSuccessEffect(item.crystals)
+      setTimeout(() => setSuccessEffect(null), 2000)
+    } catch (error) {
+      console.error('TON payment failed:', error)
+    } finally {
       setBuying(false)
       currentItemRef.current = null
     }
@@ -124,6 +184,13 @@ export default function Shop({ balance }: Props) {
         </div>
       </div>
 
+      {walletAddress && (
+        <div className="shop-wallet-badge">
+          <span className="wallet-dot" />
+          <span className="wallet-addr">{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</span>
+        </div>
+      )}
+
       <div className="shop-list">
         {loading ? (
           <div className="shop-loading">Загрузка...</div>
@@ -144,9 +211,14 @@ export default function Shop({ balance }: Props) {
             </div>
 
             <div className="sc-right">
-              <button className="sc-buy" onClick={() => handleBuy(item)}>
-                Купить · ⭐{item.stars}
+              <button className="sc-buy" onClick={() => handleBuyStars(item)} disabled={buying}>
+                ⭐ {item.stars}
               </button>
+              {item.ton_price && (
+                <button className="sc-buy sc-buy-ton" onClick={() => handleBuyTon(item)} disabled={buying}>
+                  💎 {item.ton_price} TON
+                </button>
+              )}
             </div>
           </div>
         ))}

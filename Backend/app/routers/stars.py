@@ -151,6 +151,61 @@ def get_stars_items(db: Session = Depends(get_db)):
             "id": item.id,
             "crystals": item.crystals,
             "stars": item.stars,
+            "ton_price": item.ton_price,
         }
         for item in items
     ]
+
+
+# ─────────────────────────────────────────────────────────────
+# TON Payment
+# ─────────────────────────────────────────────────────────────
+TON_WALLET_ADDRESS = "UQA2ObMyh233b2ES8aSj7-T6oaeoETELdws9lBwm-i66hKEv"
+
+
+class TonPaymentRequest(BaseModel):
+    user_id: int
+    shop_item_id: int
+    boc: str  # bag-of-cells — подписанная транзакция от TON Connect
+
+
+class TonPaymentResponse(BaseModel):
+    success: bool
+    crystals_added: int
+    new_balance: int
+
+
+@router.get("/ton-wallet")
+def get_ton_wallet():
+    """Получить адрес кошелька для оплаты TON."""
+    return {"address": TON_WALLET_ADDRESS}
+
+
+@router.post("/ton-confirm", response_model=TonPaymentResponse)
+def confirm_ton_payment(req: TonPaymentRequest, db: Session = Depends(get_db)):
+    """
+    Подтвердить оплату через TON.
+    Вызывается фронтендом после успешной отправки транзакции через TON Connect.
+    """
+    user = crud.get_user_by_id(db, req.user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    shop_item = crud.get_shop_item_by_id(db, req.shop_item_id)
+    if not shop_item:
+        raise HTTPException(status_code=404, detail="Shop item not found")
+
+    if not shop_item.is_active:
+        raise HTTPException(status_code=400, detail="Shop item is not available")
+
+    if not shop_item.ton_price or shop_item.ton_price <= 0:
+        raise HTTPException(status_code=400, detail="This item has no TON price")
+
+    # Создаём покупку и начисляем кристаллы
+    crud.create_purchase(db, user, shop_item)
+
+    return TonPaymentResponse(
+        success=True,
+        crystals_added=shop_item.crystals,
+        new_balance=user.balance,
+    )
