@@ -216,11 +216,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Optimistic update
+    // Optimistic update (округляем до 2 знаков)
     const clickPower = getClickPower();
     setUser(prev => prev ? { 
       ...prev, 
-      balance: prev.balance + clicks * clickPower,
+      balance: Math.round((prev.balance + clicks * clickPower) * 100) / 100,
       energy: prev.energy - clicks,
     } : null);
 
@@ -245,11 +245,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const handlePassiveIncome = useCallback(async (clicks: number = 1) => {
     if (!user) return;
 
-    // Optimistic update (пассивный доход не тратит энергию)
+    // Optimistic update (пассивный доход не тратит энергию, округляем до 2 знаков)
     const clickPower = getClickPower();
     setUser(prev => prev ? { 
       ...prev, 
-      balance: prev.balance + clicks * clickPower,
+      balance: Math.round((prev.balance + clicks * clickPower) * 100) / 100,
     } : null);
 
     try {
