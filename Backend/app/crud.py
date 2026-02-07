@@ -52,8 +52,8 @@ def update_user(db: Session, user: models.User, data: schemas.UserUpdate) -> mod
     return user
 
 
-def add_balance(db: Session, user: models.User, amount: int) -> models.User:
-    user.balance += amount
+def add_balance(db: Session, user: models.User, amount: float) -> models.User:
+    user.balance = round(user.balance + amount, 2)
     db.commit()
     db.refresh(user)
     return user
