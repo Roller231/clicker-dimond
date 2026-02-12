@@ -22,6 +22,7 @@ export interface UpgradeData {
   title: string;
   level: number;
   nextPrice: number;
+  valuePerLevel: number;
 }
 
 export interface TaskData {
@@ -127,6 +128,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         title: u.upgrade_title,
         level: u.level,
         nextPrice: u.next_price,
+        valuePerLevel: u.value_per_level ?? 1.0,
       })));
 
       setTasks(userTasks.map(t => ({
@@ -177,6 +179,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         title: u.upgrade_title,
         level: u.level,
         nextPrice: u.next_price,
+        valuePerLevel: u.value_per_level ?? 1.0,
       })));
     } catch (e) {
       console.error('Failed to refresh upgrades', e);
@@ -333,24 +336,29 @@ export function UserProvider({ children }: { children: ReactNode }) {
     return upgrade?.level ?? 0;
   }, [upgrades]);
 
+  const getUpgradeValue = useCallback((key: string): number => {
+    const upgrade = upgrades.find(u => u.key === key);
+    return upgrade?.valuePerLevel ?? 1.0;
+  }, [upgrades]);
+
   const getClickPower = useCallback((): number => {
-    return baseClickValue + getUpgradeLevel('click');
-  }, [baseClickValue, getUpgradeLevel]);
+    return baseClickValue + getUpgradeLevel('click') * getUpgradeValue('click');
+  }, [baseClickValue, getUpgradeLevel, getUpgradeValue]);
 
   const getPassiveIncome = useCallback((): number => {
-    const autoclick = getUpgradeLevel('autoclick') * 0.5;
-    const megaclick = getUpgradeLevel('megaclick') * 1;
-    const superclick = getUpgradeLevel('superclick') * 2;
+    const autoclick = getUpgradeLevel('autoclick') * getUpgradeValue('autoclick');
+    const megaclick = getUpgradeLevel('megaclick') * getUpgradeValue('megaclick');
+    const superclick = getUpgradeLevel('superclick') * getUpgradeValue('superclick');
     return autoclick + megaclick + superclick;
-  }, [getUpgradeLevel]);
+  }, [getUpgradeLevel, getUpgradeValue]);
 
   const getMaxEnergy = useCallback((): number => {
     // Use max_energy from user if available, otherwise calculate from upgrades
     if (user?.maxEnergy) {
       return user.maxEnergy;
     }
-    return 100 + getUpgradeLevel('maxEnergy') * 25;
-  }, [user, getUpgradeLevel]);
+    return 100 + getUpgradeLevel('maxEnergy') * getUpgradeValue('maxEnergy');
+  }, [user, getUpgradeLevel, getUpgradeValue]);
 
   // ─────────────────────────────────────────────────────────────
   // Context value

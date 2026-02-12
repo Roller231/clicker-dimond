@@ -34,6 +34,13 @@ with engine.connect() as conn:
     except Exception:
         conn.rollback()
 
+    # Миграция: value_per_level для улучшений (сколько даёт каждый уровень)
+    try:
+        conn.execute(text("ALTER TABLE upgrades ADD COLUMN value_per_level DOUBLE NOT NULL DEFAULT 1.0"))
+        conn.commit()
+    except Exception:
+        conn.rollback()
+
 # Создаём новые таблицы при старте (chat_messages, etc.)
 Base.metadata.create_all(bind=engine)
 
@@ -101,11 +108,11 @@ def on_startup():
     db = SessionLocal()
     try:
         default_upgrades = [
-            schemas.UpgradeCreate(key="click", title="Клик", description="+1 к доходу за клик", base_price=10, price_multiplier=135, max_level=100),
-            schemas.UpgradeCreate(key="autoclick", title="Автоклик", description="Кликает сам раз в 2 сек", base_price=25, price_multiplier=135, max_level=50),
-            schemas.UpgradeCreate(key="megaclick", title="Мега клик", description="Кликает сам раз в 1 сек", base_price=60, price_multiplier=140, max_level=30),
-            schemas.UpgradeCreate(key="superclick", title="Суперклик", description="Кликает сам раз в 0.5 сек", base_price=140, price_multiplier=150, max_level=20),
-            schemas.UpgradeCreate(key="maxEnergy", title="Макс. энергия", description="Увеличивает запас энергии на 25", base_price=15, price_multiplier=130, max_level=100),
+            schemas.UpgradeCreate(key="click", title="Клик", description="+1 к доходу за клик", base_price=10, price_multiplier=135, max_level=100, value_per_level=1.0),
+            schemas.UpgradeCreate(key="autoclick", title="Автоклик", description="Кликает сам раз в 2 сек", base_price=25, price_multiplier=135, max_level=50, value_per_level=0.5),
+            schemas.UpgradeCreate(key="megaclick", title="Мега клик", description="Кликает сам раз в 1 сек", base_price=60, price_multiplier=140, max_level=30, value_per_level=1.0),
+            schemas.UpgradeCreate(key="superclick", title="Суперклик", description="Кликает сам раз в 0.5 сек", base_price=140, price_multiplier=150, max_level=20, value_per_level=2.0),
+            schemas.UpgradeCreate(key="maxEnergy", title="Макс. энергия", description="Увеличивает запас энергии на 25", base_price=15, price_multiplier=130, max_level=100, value_per_level=25.0),
         ]
 
         for upg in default_upgrades:

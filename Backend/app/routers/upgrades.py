@@ -71,6 +71,7 @@ def get_user_upgrades(user_id: int, db: Session = Depends(get_db)):
             upgrade_title=upgrade.title,
             level=level,
             next_price=next_price,
+            value_per_level=upgrade.value_per_level or 1.0,
         ))
 
     return result

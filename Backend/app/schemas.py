@@ -61,6 +61,7 @@ class UpgradeBase(BaseModel):
     base_price: int = 10
     price_multiplier: int = 135
     max_level: int = 100
+    value_per_level: float = 1.0
 
 
 class UpgradeCreate(UpgradeBase):
@@ -73,6 +74,7 @@ class UpgradeUpdate(BaseModel):
     base_price: Optional[int] = None
     price_multiplier: Optional[int] = None
     max_level: Optional[int] = None
+    value_per_level: Optional[float] = None
 
 
 class UpgradeOut(UpgradeBase):
@@ -102,6 +104,7 @@ class UserUpgradeWithDetails(BaseModel):
     upgrade_title: str
     level: int
     next_price: int
+    value_per_level: float = 1.0
 
     class Config:
         from_attributes = True

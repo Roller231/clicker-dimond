@@ -36,6 +36,7 @@ class Upgrade(Base):
     base_price = Column(Integer, default=10, nullable=False)
     price_multiplier = Column(Integer, default=135)  # 1.35 stored as 135
     max_level = Column(Integer, default=100)
+    value_per_level = Column(Float, default=1.0, nullable=False)  # сколько даёт каждый уровень
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user_upgrades = relationship("UserUpgrade", back_populates="upgrade")

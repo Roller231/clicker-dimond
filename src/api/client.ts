@@ -38,6 +38,7 @@ export interface UserUpgrade {
   upgrade_title: string;
   level: number;
   next_price: number;
+  value_per_level: number;
 }
 
 export interface ShopItem {

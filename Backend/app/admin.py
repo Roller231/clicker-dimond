@@ -108,6 +108,7 @@ class UpgradeAdmin(ModelView, model=models.Upgrade):
         models.Upgrade.base_price,
         models.Upgrade.price_multiplier,
         models.Upgrade.max_level,
+        models.Upgrade.value_per_level,
     ]
     
     column_searchable_list = [
@@ -123,6 +124,7 @@ class UpgradeAdmin(ModelView, model=models.Upgrade):
         models.Upgrade.base_price: "Базовая цена",
         models.Upgrade.price_multiplier: "Множитель цены (%)",
         models.Upgrade.max_level: "Макс. уровень",
+        models.Upgrade.value_per_level: "Значение за уровень",
         models.Upgrade.created_at: "Создано",
     }
 

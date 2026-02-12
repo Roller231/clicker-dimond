@@ -95,7 +95,8 @@ def click(user_id: int, req: schemas.ClickRequest, db: Session = Depends(get_db)
     if click_upgrade:
         user_upgrade = crud.get_user_upgrade(db, user.id, click_upgrade.id)
         if user_upgrade:
-            click_power = base_click_value + user_upgrade.level
+            vpl = click_upgrade.value_per_level or 1.0
+            click_power = base_click_value + user_upgrade.level * vpl
 
     amount = req.clicks * click_power
     user = crud.add_balance(db, user, amount)
@@ -127,7 +128,8 @@ def passive_income(user_id: int, req: schemas.ClickRequest, db: Session = Depend
     if click_upgrade:
         user_upgrade = crud.get_user_upgrade(db, user.id, click_upgrade.id)
         if user_upgrade:
-            click_power = base_click_value + user_upgrade.level
+            vpl = click_upgrade.value_per_level or 1.0
+            click_power = base_click_value + user_upgrade.level * vpl
 
     amount = req.clicks * click_power
     user = crud.add_balance(db, user, amount)
