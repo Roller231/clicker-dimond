@@ -36,6 +36,7 @@ export interface Upgrade {
 export interface UserUpgrade {
   upgrade_key: string;
   upgrade_title: string;
+  upgrade_description?: string | null;
   level: number;
   next_price: number;
   value_per_level: number;

@@ -32,6 +32,7 @@ export default function Upgrades({ balance, upgrades, onBuy }: Props) {
         {upgrades.map((u) => {
           const meta = upgradesMeta[u.key] || { desc: '', emoji: '📦' }
           const canBuy = balance >= u.nextPrice
+          const desc = (u.description && u.description.trim().length > 0) ? u.description : meta.desc
 
           return (
             <div className="upgrade-card" key={u.key}>
@@ -40,7 +41,7 @@ export default function Upgrades({ balance, upgrades, onBuy }: Props) {
 
                 <div className="uc-text">
                   <div className="uc-title">{u.title}</div>
-                  <div className="uc-desc">{meta.desc}</div>
+                  <div className="uc-desc">{desc}</div>
                 </div>
               </div>
 

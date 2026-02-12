@@ -102,6 +102,7 @@ class UserUpgradeOut(BaseModel):
 class UserUpgradeWithDetails(BaseModel):
     upgrade_key: str
     upgrade_title: str
+    upgrade_description: Optional[str] = None
     level: int
     next_price: int
     value_per_level: float = 1.0

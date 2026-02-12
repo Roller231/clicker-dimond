@@ -69,6 +69,7 @@ def get_user_upgrades(user_id: int, db: Session = Depends(get_db)):
         result.append(schemas.UserUpgradeWithDetails(
             upgrade_key=upgrade.key,
             upgrade_title=upgrade.title,
+            upgrade_description=upgrade.description,
             level=level,
             next_price=next_price,
             value_per_level=upgrade.value_per_level or 1.0,

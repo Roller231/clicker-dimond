@@ -20,6 +20,7 @@ export interface UserData {
 export interface UpgradeData {
   key: string;
   title: string;
+  description: string | null;
   level: number;
   nextPrice: number;
   valuePerLevel: number;
@@ -126,6 +127,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUpgrades(userUpgrades.map(u => ({
         key: u.upgrade_key,
         title: u.upgrade_title,
+        description: u.upgrade_description ?? null,
         level: u.level,
         nextPrice: u.next_price,
         valuePerLevel: u.value_per_level ?? 1.0,
@@ -177,6 +179,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUpgrades(userUpgrades.map(u => ({
         key: u.upgrade_key,
         title: u.upgrade_title,
+        description: u.upgrade_description ?? null,
         level: u.level,
         nextPrice: u.next_price,
         valuePerLevel: u.value_per_level ?? 1.0,
