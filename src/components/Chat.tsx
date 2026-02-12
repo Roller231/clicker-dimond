@@ -13,6 +13,7 @@ export default function Chat({ onClose }: Props) {
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [toast, setToast] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -85,6 +86,50 @@ export default function Chat({ onClose }: Props) {
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
+  const showToast = useCallback((text: string) => {
+    setToast(text)
+    window.setTimeout(() => setToast(null), 1400)
+  }, [])
+
+  const openOrCopyProfile = useCallback(async (username: string | null) => {
+    if (!username) {
+      showToast('У пользователя нет username')
+      return
+    }
+
+    const clean = username.replace(/^@/, '').trim()
+    if (!clean) {
+      showToast('У пользователя нет username')
+      return
+    }
+
+    const link = `https://t.me/${clean}`
+
+    try {
+      const tg = (window as any).Telegram?.WebApp
+      if (tg?.openTelegramLink) {
+        tg.openTelegramLink(link)
+        return
+      }
+      if (tg?.openLink) {
+        tg.openLink(link)
+        return
+      }
+
+      window.open(link, '_blank', 'noopener,noreferrer')
+      return
+    } catch {
+      // ignore and fallback to copy
+    }
+
+    try {
+      await navigator.clipboard.writeText(`@${clean}`)
+      showToast('Скопировано')
+    } catch {
+      showToast('Не удалось открыть/скопировать')
+    }
+  }, [showToast])
+
   return (
     <div className="chat-overlay" onClick={onClose}>
       <div className="chat-modal" onClick={e => e.stopPropagation()}>
@@ -95,6 +140,7 @@ export default function Chat({ onClose }: Props) {
         </div>
 
         <div className="chat-messages" ref={listRef}>
+          {toast && <div className="chat-toast">{toast}</div>}
           {loading ? (
             <div className="chat-loading">Загрузка...</div>
           ) : messages.length === 0 ? (
@@ -105,7 +151,12 @@ export default function Chat({ onClose }: Props) {
               return (
                 <div key={msg.id} className={`chat-msg ${isMe ? 'chat-msg-me' : 'chat-msg-other'}`}>
                   {!isMe && (
-                    <div className="chat-msg-avatar">
+                    <button
+                      type="button"
+                      className="chat-msg-avatar chat-profile-link"
+                      onClick={() => openOrCopyProfile(msg.username)}
+                      aria-label={msg.username ? `Открыть профиль @${msg.username}` : 'Открыть профиль'}
+                    >
                       {msg.url_image ? (
                         <img src={msg.url_image} alt="" className="chat-avatar-img" />
                       ) : (
@@ -113,13 +164,17 @@ export default function Chat({ onClose }: Props) {
                           {(msg.first_name || msg.username || '?')[0]}
                         </div>
                       )}
-                    </div>
+                    </button>
                   )}
                   <div className="chat-msg-content">
                     {!isMe && (
-                      <div className="chat-msg-name">
+                      <button
+                        type="button"
+                        className="chat-msg-name chat-profile-link"
+                        onClick={() => openOrCopyProfile(msg.username)}
+                      >
                         {msg.username ? `@${msg.username}` : msg.first_name || 'Игрок'}
-                      </div>
+                      </button>
                     )}
                     <div className="chat-msg-bubble">
                       <div className="chat-msg-text">{msg.text}</div>

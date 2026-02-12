@@ -155,6 +155,44 @@
   padding-left: 10px;
 }
 
+.chat-profile-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chat-profile-link:hover {
+  opacity: 0.9;
+  text-decoration: underline;
+}
+
+.chat-profile-link:active {
+  opacity: 0.85;
+}
+
+.chat-msg-avatar.chat-profile-link {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.chat-toast {
+  position: sticky;
+  top: 10px;
+  align-self: center;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  z-index: 5;
+  backdrop-filter: blur(6px);
+}
+
 /* ─── Bubble ─── */
 .chat-msg-bubble {
   padding: 8px 12px;
